@@ -1,18 +1,22 @@
 #!/usr/bin/env node
 
 /**
- * scan.mjs — Zero-token portal scanner
+ * discover.mjs — Zero-token portal scanner
  *
  * Fetches Greenhouse, Ashby, and Lever APIs directly, applies title
  * filters from portals.yml, deduplicates against existing history,
  * and appends new offers to pipeline.md + scan-history.tsv.
  *
+ * This is the zero-token discovery ENGINE (no scoring, no carding). It is run by
+ * modes/company-discovery.md after new companies are added; the roles it finds are
+ * scored against evals/rubric.md by modes/role-scan.md before any card is created.
+ *
  * Zero Claude API tokens — pure HTTP + JSON.
  *
  * Usage:
- *   node scan.mjs                  # scan all enabled companies
- *   node scan.mjs --dry-run        # preview without writing files
- *   node scan.mjs --company Cohere # scan a single company
+ *   node discover.mjs                  # scan all enabled companies
+ *   node discover.mjs --dry-run        # preview without writing files
+ *   node discover.mjs --company Cohere # scan a single company
  */
 
 import { readFileSync, writeFileSync, appendFileSync, existsSync, mkdirSync } from 'fs';
@@ -91,6 +95,7 @@ function parseAshby(json, companyName) {
     url: j.jobUrl || '',
     company: companyName,
     location: j.location || '',
+    salary: j.compensationTierSummary || '',
   }));
 }
 
@@ -105,6 +110,38 @@ function parseLever(json, companyName) {
 }
 
 const PARSERS = { greenhouse: parseGreenhouse, ashby: parseAshby, lever: parseLever };
+
+// ── Level inference ─────────────────────────────────────────────────
+
+function inferLevel(title) {
+  const lower = title.toLowerCase();
+  if (/\b(vp|vice president|director)\b/.test(lower)) return 'Director+';
+  if (/\b(principal|staff|distinguished)\b/.test(lower)) return 'Staff/Principal';
+  if (/\b(senior|sr\.?|lead)\b/.test(lower)) return 'Senior';
+  if (/\b(junior|jr\.?|associate)\b/.test(lower)) return 'Junior';
+  if (/\b(mid|intermediate)\b/.test(lower)) return 'Mid';
+  return '';
+}
+
+// ── CSV writer ──────────────────────────────────────────────────────
+
+const CSV_PATH_PREFIX = 'output/scan';
+
+function writeCsv(offers, date) {
+  mkdirSync('output', { recursive: true });
+  const csvPath = `${CSV_PATH_PREFIX}-${date}.csv`;
+  const header = ['job_title', 'company', 'salary', 'level', 'location', 'job_description', 'company_description', 'recruiter_contact', 'job_link', 'job_fit', 'mission_fit', 'combined'];
+  const escape = cell => {
+    const s = String(cell ?? '');
+    return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const rows = [header, ...offers.map(o => [
+    o.title, o.company, o.salary || '', o.level || '', o.location || '',
+    '', '', '', o.url, '', '', '',
+  ])];
+  writeFileSync(csvPath, rows.map(r => r.map(escape).join(',')).join('\n') + '\n', 'utf-8');
+  return csvPath;
+}
 
 // ── Fetch with timeout ──────────────────────────────────────────────
 
@@ -131,6 +168,33 @@ function buildTitleFilter(titleFilter) {
     const hasPositive = positive.length === 0 || positive.some(k => lower.includes(k));
     const hasNegative = negative.some(k => lower.includes(k));
     return hasPositive && !hasNegative;
+  };
+}
+
+// ── Location filter ─────────────────────────────────────────────────
+// Keep a job only if it's remote (when remote_ok) or in an allowed location.
+// Config lives in portals.yml under `location_filter`.
+
+function buildLocationFilter(locationFilter) {
+  if (!locationFilter || locationFilter.enabled === false) return () => true;
+
+  const remoteOk = locationFilter.remote_ok !== false;
+  const keepUnknown = locationFilter.keep_unknown !== false;
+  const remoteKeywords = (locationFilter.remote_keywords || ['remote', 'anywhere', 'distributed'])
+    .map(k => k.toLowerCase());
+  const allowed = (locationFilter.allowed || []).map(k => k.toLowerCase());
+  const abbrev = (locationFilter.allowed_abbrev || []).map(k => k.toLowerCase());
+  const abbrevRe = abbrev.length
+    ? new RegExp(`\\b(${abbrev.map(a => a.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})\\b`, 'i')
+    : null;
+
+  return (location) => {
+    const loc = (location || '').trim().toLowerCase();
+    if (!loc) return keepUnknown;
+    if (remoteOk && remoteKeywords.some(k => loc.includes(k))) return true;
+    if (allowed.some(k => loc.includes(k))) return true;
+    if (abbrevRe && abbrevRe.test(loc)) return true;
+    return false;
   };
 }
 
@@ -264,6 +328,7 @@ async function main() {
   const config = parseYaml(readFileSync(PORTALS_PATH, 'utf-8'));
   const companies = config.tracked_companies || [];
   const titleFilter = buildTitleFilter(config.title_filter);
+  const locationFilter = buildLocationFilter(config.location_filter);
 
   // 2. Filter to enabled companies with detectable APIs
   const targets = companies
@@ -285,6 +350,7 @@ async function main() {
   const date = new Date().toISOString().slice(0, 10);
   let totalFound = 0;
   let totalFiltered = 0;
+  let totalFilteredLocation = 0;
   let totalDupes = 0;
   const newOffers = [];
   const errors = [];
@@ -301,6 +367,10 @@ async function main() {
           totalFiltered++;
           continue;
         }
+        if (!locationFilter(job.location)) {
+          totalFilteredLocation++;
+          continue;
+        }
         if (seenUrls.has(job.url)) {
           totalDupes++;
           continue;
@@ -313,7 +383,7 @@ async function main() {
         // Mark as seen to avoid intra-scan dupes
         seenUrls.add(job.url);
         seenCompanyRoles.add(key);
-        newOffers.push({ ...job, source: `${type}-api` });
+        newOffers.push({ ...job, source: `${type}-api`, level: inferLevel(job.title) });
       }
     } catch (err) {
       errors.push({ company: company.name, error: err.message });
@@ -323,9 +393,11 @@ async function main() {
   await parallelFetch(tasks, CONCURRENCY);
 
   // 5. Write results
+  let csvPath = null;
   if (!dryRun && newOffers.length > 0) {
     appendToPipeline(newOffers);
     appendToScanHistory(newOffers, date);
+    csvPath = writeCsv(newOffers, date);
   }
 
   // 6. Print summary
@@ -335,6 +407,7 @@ async function main() {
   console.log(`Companies scanned:     ${targets.length}`);
   console.log(`Total jobs found:      ${totalFound}`);
   console.log(`Filtered by title:     ${totalFiltered} removed`);
+  console.log(`Filtered by location:  ${totalFilteredLocation} removed (not remote / NY)`);
   console.log(`Duplicates:            ${totalDupes} skipped`);
   console.log(`New offers added:      ${newOffers.length}`);
 
@@ -348,12 +421,17 @@ async function main() {
   if (newOffers.length > 0) {
     console.log('\nNew offers:');
     for (const o of newOffers) {
-      console.log(`  + ${o.company} | ${o.title} | ${o.location || 'N/A'}`);
+      const salary = o.salary ? ` | ${o.salary}` : '';
+      const level = o.level ? ` | ${o.level}` : '';
+      console.log(`  + ${o.company} | ${o.title}${level} | ${o.location || 'N/A'}${salary}`);
     }
     if (dryRun) {
       console.log('\n(dry run — run without --dry-run to save results)');
     } else {
-      console.log(`\nResults saved to ${PIPELINE_PATH} and ${SCAN_HISTORY_PATH}`);
+      console.log(`\nResults saved to:`);
+      console.log(`  ${PIPELINE_PATH}`);
+      console.log(`  ${SCAN_HISTORY_PATH}`);
+      if (csvPath) console.log(`  ${csvPath}  ← CSV (open in Excel/Sheets)`);
     }
   }
 

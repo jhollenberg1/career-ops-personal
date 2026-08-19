@@ -50,7 +50,7 @@ When using [Gemini CLI](https://github.com/google-gemini/gemini-cli), the follow
 | `/career-ops-project` | `/career-ops project` | Evaluate portfolio project |
 | `/career-ops-tracker` | `/career-ops tracker` | Application status overview |
 | `/career-ops-apply` | `/career-ops apply` | Live application assistant |
-| `/career-ops-scan` | `/career-ops scan` | Scan portals for new offers |
+| `/career-ops-role-scan` | `/career-ops role-scan` | Scan portals for new offers |
 | `/career-ops-batch` | `/career-ops batch` | Batch processing |
 | `/career-ops-patterns` | `/career-ops patterns` | Analyze rejection patterns |
 | `/career-ops-followup` | `/career-ops followup` | Follow-up cadence tracker |
@@ -85,7 +85,7 @@ If `modes/_profile.md` is missing, copy from `modes/_profile.template.md` silent
 | Evaluates portfolio project | read `modes/project.md` |
 | Asks about application status | read `modes/tracker.md` |
 | Fills out application form | read `modes/_shared.md` + `modes/apply.md` |
-| Searches for new offers | read `modes/_shared.md` + `modes/scan.md` |
+| Searches for new offers | read `modes/_shared.md` + `modes/role-scan.md` |
 | Processes pending URLs | read `modes/_shared.md` + `modes/pipeline.md` |
 | Batch processes offers | read `modes/_shared.md` + `modes/batch.md` |
 | Asks about rejection patterns | read `modes/patterns.md` |

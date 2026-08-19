@@ -28,7 +28,10 @@ Determine the mode from `$mode`:
 | `tracker` | `tracker` |
 | `pipeline` | `pipeline` |
 | `apply` | `apply` |
-| `scan` | `scan` |
+| `scan` / `role-scan` | `role-scan` |
+| `populate-trello` | `populate-trello` |
+| `populate-notion` | `populate-notion` |
+| `company-discovery` | `company-discovery` |
 | `batch` | `batch` |
 | `patterns` | `patterns` |
 | `followup` | `followup` |
@@ -59,7 +62,8 @@ Available commands:
   /career-ops project   → Evaluate portfolio project idea
   /career-ops tracker   → Application status overview
   /career-ops apply     → Live application assistant (reads form + generates answers)
-  /career-ops scan      → Scan portals and discover new offers
+  /career-ops role-scan → Rubric-scored open-role scan (score + surface + card)
+  /career-ops company-discovery → Grow tracked_companies + zero-token board sweep
   /career-ops batch     → Batch processing with parallel workers
   /career-ops patterns  → Analyze rejection patterns and improve targeting
   /career-ops followup  → Follow-up cadence tracker: flag overdue, generate drafts
@@ -77,15 +81,15 @@ After determining the mode, load the necessary files before executing:
 ### Modes that require `_shared.md` + their mode file:
 Read `modes/_shared.md` + `modes/{mode}.md`
 
-Applies to: `auto-pipeline`, `oferta`, `ofertas`, `pdf`, `contacto`, `apply`, `pipeline`, `scan`, `batch`
+Applies to: `auto-pipeline`, `oferta`, `ofertas`, `pdf`, `contacto`, `apply`, `pipeline`, `role-scan`, `batch`
 
 ### Standalone modes (only their mode file):
 Read `modes/{mode}.md`
 
-Applies to: `tracker`, `deep`, `interview-prep`, `training`, `project`, `patterns`, `followup`
+Applies to: `tracker`, `deep`, `interview-prep`, `training`, `project`, `patterns`, `followup`, `populate-trello`, `populate-notion`, `company-discovery`
 
 ### Modes delegated to subagent:
-For `scan`, `apply` (with Playwright), and `pipeline` (3+ URLs): launch as Agent with the content of `_shared.md` + `modes/{mode}.md` injected into the subagent prompt.
+For `role-scan`, `apply` (with Playwright), and `pipeline` (3+ URLs): launch as Agent with the content of `_shared.md` + `modes/{mode}.md` injected into the subagent prompt.
 
 ```
 Agent(

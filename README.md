@@ -134,7 +134,7 @@ gemini
 # 4. Use slash commands just like Claude Code
 /career-ops "Senior AI Engineer at Anthropic..."
 /career-ops-evaluate --file ./jds/openai.txt
-/career-ops-scan
+/career-ops-role-scan
 /career-ops-pdf
 /career-ops-tracker
 ```
@@ -166,7 +166,7 @@ Career-ops is a single slash command with multiple modes:
 ```
 /career-ops                → Show all available commands
 /career-ops {paste a JD}   → Full auto-pipeline (evaluate + PDF + tracker)
-/career-ops scan           → Scan portals for new offers
+/career-ops role-scan           → Scan portals for new offers
 /career-ops pdf            → Generate ATS-optimized CV
 /career-ops batch          → Batch evaluate multiple offers
 /career-ops tracker        → View application status

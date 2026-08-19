@@ -32,7 +32,7 @@ These files contain system logic, scripts, templates, and instructions that impr
 | `modes/_shared.md` | Scoring system, global rules, tools |
 | `modes/oferta.md` | Evaluation mode instructions |
 | `modes/pdf.md` | PDF generation instructions |
-| `modes/scan.md` | Portal scanner instructions |
+| `modes/role-scan.md` | Portal scanner instructions |
 | `modes/batch.md` | Batch processing instructions |
 | `modes/apply.md` | Application assistant instructions |
 | `modes/auto-pipeline.md` | Auto-pipeline instructions |
