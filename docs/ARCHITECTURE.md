@@ -49,7 +49,6 @@ These are supported, but they are not required for the default workflow:
 - `dashboard/` — a Go terminal UI for the application tracker.
 - `generate-latex.mjs` — an alternative LaTeX CV path; the default PDF path is HTML.
 - `gemini-eval.mjs` and language-specific `modes/` directories — alternative agent/runtime support.
-- `archive/` — retired reference utilities, intentionally excluded from the supported workflow.
 
 ## Batch processing
 

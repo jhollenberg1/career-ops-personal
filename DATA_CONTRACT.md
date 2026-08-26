@@ -18,7 +18,6 @@ These files contain your personal data, customizations, and work product. Update
 | `data/pipeline.md` | Your URL inbox |
 | `data/scan-history.tsv` | Your scan history |
 | `data/seen-postings.jsonl` | Your posting-resolution ledger |
-| `data/companies.csv` | Your optional company-research roster |
 | `evals/golden-set.csv` | Your labeled classifier examples |
 | `evals/report.md` | Your generated classifier evaluation report |
 | `resume/*` | Your personal resume bullet library |

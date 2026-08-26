@@ -8,12 +8,15 @@ Company discovery → Company Targets: New Targets (company fit 4–5)
   → discover.mjs (daily watchlist / weekly --all)
   → data/pipeline.md (candidate queue)
   → exact job-detail validation → modes/role-scan.md (rubric)
-  → modes/populate-notion.md and modes/populate-trello.md
+  → modes/populate-trello.md
   → data/seen-postings.jsonl (posting resolution ledger)
 
 WebSearch prospecting in role scan may also find an untracked live role. After exact official-page
 validation it can surface the role to Job Applications and create a separate New Targets company
 card; only Joshua's later move to All Tracked adds that company to the watchlist.
+
+`modes/populate-notion.md` is an optional dual-write integration, not part of the default scan
+handoff.
 ```
 
 ### State ownership
