@@ -1,40 +1,30 @@
 # Architecture
 
-## System Overview
+Career-Ops has two supported paths. They share your CV and profile, but they answer
+different questions and use different scores.
 
 ```
-                    ┌─────────────────────────────────┐
-                    │         AI Coding CLI Agent      │
-                    │   (reads AGENTS.md + modes/*.md) │
-                    └──────────┬──────────────────────┘
-                               │
-            ┌──────────────────┼──────────────────────┐
-            │                  │                       │
-     ┌──────▼──────┐   ┌──────▼──────┐   ┌───────────▼────────┐
-     │ Single Eval  │   │ Portal Scan │   │   Batch Process    │
-     │ (auto-pipe)  │   │  (scan.md)  │   │   (batch-runner)   │
-     └──────┬──────┘   └──────┬──────┘   └───────────┬────────┘
-            │                  │                       │
-            │           ┌──────▼──────┐          ┌────▼─────┐
-            │           │ pipeline.md │          │ N workers│
-            │           │ (URL inbox) │          │ (headless)
-            │           └─────────────┘          └────┬─────┘
-            │                                          │
-     ┌──────▼──────────────────────────────────────────▼──────┐
-     │                    Output Pipeline                      │
-     │  ┌──────────┐  ┌────────────┐  ┌───────────────────┐  │
-     │  │ Report.md│  │  PDF (HTML  │  │ Tracker TSV       │  │
-     │  │ (A-F eval)│  │  → Puppeteer)│  │ (merge-tracker)  │  │
-     │  └──────────┘  └────────────┘  └───────────────────┘  │
-     └────────────────────────────────────────────────────────┘
-                               │
-                    ┌──────────▼──────────┐
-                    │  data/applications.md │
-                    │  (canonical tracker)  │
-                    └──────────────────────┘
+Find roles:  portals.yml → scanner/ → data/pipeline.md → role-scan → board
+Assess a role: job URL or JD → auto-pipeline → report + tailored CV → applications tracker
 ```
 
-## Evaluation Flow (Single Offer)
+`docs/SYSTEM_MAP.md` is the operational reference for the role-discovery path. This
+page explains the boundaries so that optional tooling is not mistaken for required setup.
+
+## Core components
+
+| Component | Responsibility | Source of truth |
+|---|---|---|
+| Candidate profile | Your experience, preferences, and targeting context | `cv.md`, `config/profile.yml`, `modes/_profile.md` |
+| Discovery scanner | Fetches configured ATS listings, filters them, verifies live postings, and queues candidates | `scanner/`, `portals.yml` |
+| Role assessment | Applies the role-scan rubric before a role is surfaced | `modes/role-scan.md`, `evals/rubric.md` |
+| Application assessment | Evaluates a specific role and creates a report/CV plan | `modes/auto-pipeline.md`, `modes/oferta.md` |
+| Application tracker | Records roles once they become applications | `data/applications.md` |
+
+The discovery `match_score` (1–10) and application `application_score` (1–5) are
+intentionally separate. Do not compare or average them.
+
+## Application assessment flow
 
 1. **Input**: User pastes JD text or URL
 2. **Extract**: Playwright/WebFetch extracts JD from URL
@@ -49,9 +39,19 @@
 5. **Score**: Weighted average across 10 dimensions (1-5)
 6. **Report**: Save as `reports/{num}-{company}-{date}.md`
 7. **PDF**: Generate ATS-optimized CV (`generate-pdf.mjs`)
-8. **Track**: Write TSV to `batch/tracker-additions/`, auto-merged
+8. **Track**: Write a TSV addition to `batch/tracker-additions/`; merge it with `npm run merge`
 
-## Batch Processing
+## Optional components
+
+These are supported, but they are not required for the default workflow:
+
+- `batch/` — run multiple application assessments with headless CLI workers.
+- `dashboard/` — a Go terminal UI for the application tracker.
+- `generate-latex.mjs` — an alternative LaTeX CV path; the default PDF path is HTML.
+- `gemini-eval.mjs` and language-specific `modes/` directories — alternative agent/runtime support.
+- `archive/` — retired reference utilities, intentionally excluded from the supported workflow.
+
+## Batch processing
 
 The batch system processes multiple offers in parallel:
 
@@ -70,7 +70,7 @@ Each worker is a headless AI CLI instance — the bundled `batch-runner.sh` invo
 
 The orchestrator manages parallelism, state, retries, and resume.
 
-## Data Flow
+## Shared inputs
 
 ```
 cv.md                    →  Evaluation context
@@ -81,13 +81,13 @@ templates/states.yml     →  Canonical status values
 templates/cv-template.html → PDF generation template
 ```
 
-## File Naming Conventions
+## Output conventions
 
 - Reports: `{###}-{company-slug}-{YYYY-MM-DD}.md` (3-digit zero-padded)
 - PDFs: `cv-candidate-{company-slug}-{YYYY-MM-DD}.pdf`
 - Tracker TSVs: `batch/tracker-additions/{id}.tsv`
 
-## Pipeline Integrity
+## Tracker integrity
 
 Scripts maintain data consistency:
 
@@ -98,13 +98,3 @@ Scripts maintain data consistency:
 | `dedup-tracker.mjs` | Removes duplicate entries by company+role |
 | `normalize-statuses.mjs` | Maps status aliases to canonical values |
 | `cv-sync-check.mjs` | Validates setup consistency |
-
-## Dashboard TUI
-
-The `dashboard/` directory contains a standalone Go TUI application that visualizes the pipeline:
-
-- Filter tabs: All, Evaluada, Aplicado, Entrevista, Top >=4, No Aplicar
-- Sort modes: Score, Date, Company, Status
-- Grouped/flat view
-- Lazy-loaded report previews
-- Inline status picker

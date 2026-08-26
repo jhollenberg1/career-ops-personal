@@ -17,6 +17,11 @@ These files contain your personal data, customizations, and work product. Update
 | `data/applications.md` | Your application tracker |
 | `data/pipeline.md` | Your URL inbox |
 | `data/scan-history.tsv` | Your scan history |
+| `data/seen-postings.jsonl` | Your posting-resolution ledger |
+| `data/companies.csv` | Your optional company-research roster |
+| `evals/golden-set.csv` | Your labeled classifier examples |
+| `evals/report.md` | Your generated classifier evaluation report |
+| `resume/*` | Your personal resume bullet library |
 | `data/follow-ups.md` | Your follow-up history |
 | `writing-samples/*` | Your personal writing samples for style calibration |
 | `reports/*` | Your evaluation reports |
@@ -33,6 +38,8 @@ These files contain system logic, scripts, templates, and instructions that impr
 | `modes/oferta.md` | Evaluation mode instructions |
 | `modes/pdf.md` | PDF generation instructions |
 | `modes/role-scan.md` | Portal scanner instructions |
+| `evals/rubric.md` | Scan match-score policy |
+| `evals/score.py` | Deterministic rubric-evaluation scorer |
 | `modes/batch.md` | Batch processing instructions |
 | `modes/apply.md` | Application assistant instructions |
 | `modes/auto-pipeline.md` | Auto-pipeline instructions |

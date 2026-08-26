@@ -1,14 +1,17 @@
 # Mode: role-scan — Rubric-Scored Open-Role Scan
 
-Scans configured job portals, filters by title relevance, scores each offer on job fit and mission fit, and adds new opportunities to the pipeline.
+Scans configured job portals, filters by title relevance, applies the v5 rubric, and hands surfaced opportunities to the board-population modes.
 
-> **Note (v1.5+):** The default scanner (`discover.mjs` / `npm run discover`) is **zero-token** and queries Greenhouse, Ashby, and Lever public APIs directly. The Playwright/WebSearch levels described below are the **agent** flow (run by Claude/Codex), not what `discover.mjs` does. If a company has no Greenhouse/Ashby/Lever API, `discover.mjs` will skip it — the agent must cover those via Level 1 (Playwright) or Level 3 (WebSearch).
+> **Note (v1.5+):** The default scanner (`discover.mjs` / `npm run discover`) is **zero-token** and queries Greenhouse, Ashby, and Lever public APIs directly. The Playwright/WebSearch levels described below are the **agent** flow (run by Claude/Codex), not what `discover.mjs` does. If a company has no supported API, the agent reads its official careers page in Level 1. WebSearch also has a prospecting lane for live roles at untracked companies; it must validate the official role page before it can surface a role.
 
 > **Inputs (authoritative — this mode MUST read all of them):**
 > - `portals.yml` — tracked companies, title filters, search queries, seen-ledger config
 > - `config/profile.yml` → `narrative.excluded_sectors` / `excluded_companies` — hard exclusions
-> - `modes/_profile.md` → `## Scoring Models` / `## Your Values` — archetypes + mission filter
-> - `evals/rubric.md` — the **authoritative scoring rubric** (v3.3, 1–10 bands)
+> - `modes/_profile.md` → `## Your Target Roles` / `## Your Values` — user context only
+> - `evals/rubric.md` — the **authoritative scoring rubric** (v5: company fit 1–5 and role match 1–10)
+> - `data/seen-postings.jsonl` — the authoritative posting-level dedupe ledger
+> - Company Targets Trello board → **📚 All Tracked** is the approval queue for additions to
+>   `portals.yml`; **🆕 New Targets** is not scanned
 >
 > Every candidate surfaced by discovery is scored against `evals/rubric.md` **before** it is carded. Do not card a role that has not been scored. Cheap discovery (`discover.mjs`, board API sweep) only *finds* candidates; this mode *judges and surfaces* them.
 
@@ -27,7 +30,7 @@ Agent(
 ## Configuration
 
 Read `portals.yml` which contains:
-- `search_queries`: WebSearch queries with `site:` filters per portal (broad discovery)
+- `search_queries`: WebSearch queries for prospecting roles outside the tracked-company watchlist
 - `tracked_companies`: Specific companies with `careers_url` for direct navigation
 - `title_filter`: positive/negative/seniority_boost keywords for title filtering
 
@@ -35,7 +38,7 @@ Read `portals.yml` which contains:
 
 ### Level 1 — Direct Playwright (PRIMARY)
 
-**For each company in `tracked_companies`:** Navigate to its `careers_url` with Playwright (`browser_navigate` + `browser_snapshot`), read ALL visible job listings, and extract the title + URL of each. This is the most reliable method because:
+**For each company in the active watchlist:** Navigate to its `careers_url` with Playwright (`browser_navigate` + `browser_snapshot`), read visible job listings, and extract the title + URL of each. Use the rotation/full list only in a weekly run or when discovery is thin. This is the most reliable method because:
 - Sees the page in real time (no Google-cached results)
 - Works with SPAs (Ashby, Lever, Workday)
 - Detects new offers immediately
@@ -63,36 +66,49 @@ For companies with a public API or structured feed, use the JSON/XML response as
 - `teamtailor`: RSS items → `title`, `link`
 - `workday`: `jobPostings[]` → `title`, `externalPath` or URL constructed from host
 
-### Level 3 — WebSearch queries (BROAD DISCOVERY)
+### Level 3 — WebSearch prospecting (UNTRACKED COMPANIES)
 
-`search_queries` with `site:` filters cover portals broadly (all Ashby, all Greenhouse, etc.). Useful for discovering NEW companies not yet in `tracked_companies`, but results may be stale.
+WebSearch finds promising roles outside the watchlist. Search-result snippets, Reddit,
+LinkedIn, and aggregators are leads only: resolve each lead to the employer's official careers
+page and exact public job-detail URL before treating it as a candidate.
 
 **Execution priority:**
 1. Level 1: Playwright → all `tracked_companies` with `careers_url`
 2. Level 2: API → all `tracked_companies` with `api:`
-3. Level 3: WebSearch → all `search_queries` with `enabled: true`
+3. Level 3: WebSearch → promising roles at untracked companies, then official-page validation
 
 Levels are additive — run all, merge results, then deduplicate.
 
 ## Workflow
 
-1. **Read configuration**: `portals.yml`
-2. **Read history**: `data/scan-history.tsv` → already-seen URLs
-3. **Read dedup sources**: `data/applications.md` + `data/pipeline.md`
-4. **Read scoring rubrics**: `modes/_profile.md` → `## Scoring Models`
+1. **Import approved targets**: Read every card in Company Targets **📚 All Tracked**. For each
+   normalized company name not already enabled in `portals.yml`, validate the card's official
+   `Careers:` URL with Playwright. If it works, add one enabled `tracked_companies` entry with
+   `name`, `careers_url`, inferred API/`scan_method`, and a concise `notes` value copied from
+   the card; validate the YAML after editing. If it does not work, leave the card in All Tracked,
+   mark its careers source `needs resolution`, and report it—do not add a guessed URL. Never
+   import 🆕 New Targets: moving a card into All Tracked is the user's approval signal.
+2. **Read configuration**: `portals.yml`
+3. **Read the candidate queue**: `data/pipeline.md` → every unprocessed pending URL is an input candidate to score, not a duplicate to discard. Seed the candidate list with these entries before running new discovery.
+4. **Read the dedupe ledger**: `data/seen-postings.jsonl` → use the latest record for each URL (and secondarily company + normalized role). This is the authoritative posting-level dedupe source; apply its re-check windows from `portals.yml`.
+5. **Read evaluated applications**: `data/applications.md` → do not re-evaluate a company + normalized role that has already reached an application decision.
+6. **Read scoring rubric**: `evals/rubric.md`. Use `_profile.md` only for narrative context not already captured by the rubric.
 
-5. **Level 1 — Playwright scan** (parallel in batches of 3–5):
-   For each company in `tracked_companies` with `enabled: true` and a defined `careers_url`:
+7. **Level 1 — Playwright scan** (sequential):
+   For each enabled active-watchlist company with a defined `careers_url`:
    a. `browser_navigate` to `careers_url`
    b. `browser_snapshot` to read all job listings
    c. If the page has department filters, navigate relevant sections
-   d. Extract from each listing: `{title, url, company}`
+   d. Extract from each listing: `{title, detail_url, company, official_careers_url}`
    e. If results are paginated, navigate additional pages
    f. Accumulate in candidate list
-   g. If `careers_url` fails (404, redirect), try `scan_query` as fallback and note for URL update
+   g. If `careers_url` fails (404, redirect), use WebSearch only to locate a replacement
+      official careers page, then note the source for a `portals.yml` update. Do not use it
+      to enumerate roles.
 
-6. **Level 2 — ATS APIs / feeds** (parallel):
-   For each company in `tracked_companies` with `api:` defined and `enabled: true`:
+8. **Level 2 — ATS APIs / feeds** (parallel):
+   For each company in `tracked_companies` with a configured API or recognized official
+   ATS board, and `enabled: true`:
    a. WebFetch the API/feed URL
    b. If `api_provider` is defined, use its parser; otherwise infer from domain
    c. For **Ashby**, send POST with:
@@ -101,49 +117,51 @@ Levels are additive — run all, merge results, then deduplicate.
       - GraphQL query for `jobBoardWithTeams` + `jobPostings { id title locationName employmentType compensationTierSummary }`
    d. For **BambooHR**, the list only has basic metadata. For each relevant item, GET the detail URL and extract the full JD from `result.jobOpening`. Use `jobOpeningShareUrl` as public URL if available.
    e. For **Workday**, POST `{"appliedFacets":{},"limit":20,"offset":0,"searchText":""}` and paginate by `offset` until exhausted
-   f. Extract and normalize: `{title, url, company}`
+   f. Extract and normalize: `{title, detail_url, company, official_careers_url}`
    g. Accumulate in candidate list (dedup with Level 1)
 
-7. **Level 3 — WebSearch queries** (parallel where possible):
+9. **Level 3 — WebSearch prospecting** (parallel where possible):
    For each query in `search_queries` with `enabled: true`:
-   a. Run WebSearch with the defined `query`
-   b. From each result extract: `{title, url, company}`
-      - **title**: from the result title (before " @ " or " | ")
-      - **url**: result URL
-      - **company**: after " @ " in the title, or extract from domain/path
-   c. Accumulate in candidate list (dedup with Level 1+2)
+   a. Run WebSearch with the defined `query`.
+   b. Extract a prospective role, company, and the exact official job-detail URL. Resolve the
+      employer's official careers page or ATS board. Do not use Reddit, LinkedIn, job
+      aggregators, or a search snippet as a careers or job source.
+   c. Add the role to the candidate list only with both an official careers URL and exact public
+      job-detail URL. Keep the search-result URL only as provenance.
+   d. Process it through the same title filter, dedupe, exact-detail validation, enrichment, and
+      rubric scoring as tracked-company roles. The company is still untracked: do not add it to
+      `portals.yml` or move its Company Targets card to All Tracked.
 
-8. **Filter by title** using `title_filter` from `portals.yml`:
+10. **Filter by title** using `title_filter` from `portals.yml`:
    - At least 1 `positive` keyword must appear in the title (case-insensitive)
    - 0 `negative` keywords must appear
    - `seniority_boost` keywords raise priority but are not required
 
-9. **Deduplicate** against 3 sources:
-   - `scan-history.tsv` → exact URL already seen
-   - `applications.md` → company + normalized role already evaluated
-   - `pipeline.md` → exact URL already in pending or processed
+11. **Deduplicate and merge candidates**:
+   - `seen-postings.jsonl` is authoritative. Skip `carded` URLs always; skip `closed` and `rejected-guardrail` URLs only while within their configured re-check window; skip `dedup` URLs while the matching board record remains present.
+   - Skip company + normalized-role matches that are already evaluated in `applications.md`.
+   - An unprocessed URL already in `pipeline.md` is **not** a duplicate: it is an input candidate. If the same URL appears again from a board/API/search level, merge its metadata into one candidate and score it once.
+   - `scan-history.tsv` is observability only. Never use an `added` history row by itself to suppress a candidate that has not yet been scored and resolved in the ledger.
 
-10. **Verify liveness of Level 3 results** — BEFORE adding to pipeline:
+12. **Validate every role candidate** — immediately before scoring:
 
-    WebSearch results may be stale (Google caches for weeks or months). Verify with Playwright each new URL from Level 3. Levels 1 and 2 are real-time and do not need this check.
+    APIs, saved pipeline entries, and direct careers boards are discovery sources, not
+    proof that a particular requisition remains open. Run the exact public job-detail URLs
+    through the shared validator in one batch:
 
-    For each new Level 3 URL (sequential — NEVER Playwright in parallel):
-    a. `browser_navigate` to the URL
-    b. `browser_snapshot` to read content
-    c. Classify:
-       - **Active**: job title visible + role description + Apply/Submit control in main content. Do not count generic header/navbar/footer text.
-       - **Expired** (any of these signals):
-         - Final URL contains `?error=true` (Greenhouse redirects closed offers this way)
-         - Page contains: "job no longer available" / "no longer open" / "position has been filled" / "this job has expired" / "page not found"
-         - Only navbar and footer visible, no JD content (content < ~300 chars)
-    d. If expired: record in `scan-history.tsv` with status `skipped_expired` and discard
-    e. If active: continue to step 11
+    ```bash
+    npm run validate-postings -- <url-1> <url-2> ...
+    ```
 
-    **Do not abort the scan if one URL fails.** On timeout, 403, or error: mark `skipped_expired` and continue.
+    A role may continue only when its JSON result is `"result": "active"`. Set `detail_url`
+    to the validator's `finalUrl`, and retain `official_careers_url`, `finalUrl`, and
+    `checkedAt` in the handoff. For `expired`, `uncertain`, timeout,
+    or error results, append a `closed` record to `data/seen-postings.jsonl` and do not
+    score, enrich, or card the role.
 
-11. **For each new verified offer**:
+13. **For each validated offer**:
 
-    a. **Enrich** (if the page was not already visited via Playwright in steps 5 or 10):
+    a. **Enrich** (if the page was not already visited via Playwright in steps 7 or 12):
        - `browser_navigate` + `browser_snapshot` to the job URL
        - Extract:
          - **salary**: visible salary range ("$120k–$160k") or blank if not listed
@@ -157,33 +175,46 @@ Levels are additive — run all, merge results, then deduplicate.
          - **relationship_component**: degree of client or external stakeholder relationship work (high / medium / low)
          - **hard_requirements**: requirements the candidate genuinely does NOT meet (certs, licenses, domain expertise). Blank if none.
          - **sector_classification**: company sector for purpose/mission scoring
-         - **glassdoor_rating**: the company's Glassdoor overall rating (fetch via web search; blank if unavailable) — the v3.3 culture signal
+         - **glassdoor_rating**: company rating if readily available; blank if unavailable. It is supporting context, not a gate.
 
-    b. **Score (v3.3)** using `modes/_profile.md` → `## Scoring Models` (authoritative source `evals/rubric.md`):
+    b. **Score using `evals/rubric.md` v5 (the sole scoring specification):** produce
+       `company_fit` (1–5), company disposition and rationale, plus `match_score` (1–10),
+       role rationale, and a `fit_summary`: one plain-English sentence explaining why this
+       role earned its score and naming its main caveat. The `fit_summary` is required in
+       the Trello handoff for every surfaced role. Do not use the legacy blended `job_fit`/`mission_fit` model,
+       `scan-history.tsv`, or `modes/_profile.md` as scoring specifications.
 
-       Produce a single **match_score (1–10)** + a one-line **justification**. Bands: 1–3 reject · 4–7 needs review · 8–10 pass. Priority of levers: purpose/interest (biggest; "boring" is a real negative) > role fit (Tier-1a/mixed > strict SWE > adjacent) > attainability (dock PM ~2, dock pure-ops RevOps/GTM hard) > culture (Glassdoor: ≥4.0 lifts, <3.0 at non-mission abstains) > location preference > comp (secondary, interacts with mission; weak/no mission + low comp = pass). To score ≥6 a role must strongly match purpose/interest OR role fit.
+    c. **Apply the v5 routing rules.** For an untracked company from Level 3 with `company_fit`
+       4–5, hand it to the Company Targets workflow as a **New Target** even if the role does
+       not pass, and even if the company's own careers page could not be confirmed (card it
+       `needs resolution` in that case — see `modes/populate-company-trello.md`). This is
+       independent of the role gate below: a validated role always still needs its own verified
+       official careers page before it can be carded to Job Applications. Include the validated
+       role as the Current-role signal and reuse the company-discovery card fields: company-fit
+       score and rationale, discovery summary, careers URL (or `needs resolution`), review date,
+       and provenance. For an already tracked company, update its existing All Tracked card instead.
+       Apply the role surfacing gate independently: an active role scoring 8–10, or 6–7 only on a
+       fallback day, is handed to Job Applications even though its company remains a New Target.
+       `pipeline.md` is the candidate queue, not the dedupe
+       authority and not a second board: do not append a duplicate line for a queued role.
+    d. Record the resolution in `data/seen-postings.jsonl`: `carded` after the board handoff; `closed` for expired postings; `rejected-guardrail` for hard-rule failures; and `rejected-lowscore` for scored-but-unsurfaced candidates. Append only; latest record wins. Also retain `scan-history.tsv` as a lightweight audit log.
 
-       If the role hits a hard rule (excluded sector/company, non-NY on-site, comp entirely <$80k, YOE 6+/0-1, off-target function): score 1–3, record in scan-history with status `skipped_values` (for excluded companies) or `skipped_title`/etc as appropriate, and **do not add** to pipeline or CSV.
+14. **Title-filtered offers**: record in `scan-history.tsv` with status `skipped_title`
+15. **Duplicate offers**: record with status `skipped_dup`
+16. **Expired offers (Level 3)**: record with status `skipped_expired`
+17. **Excluded offers (values)**: record with status `skipped_values`
 
-    c. **Surfacing gate (v3.3):** add to `pipeline.md` under "## Pending" only if it will be surfaced — surface EVERY role scoring **8–10**; if this run produced **zero** 8–10 roles, fall back to surfacing the **6–7** roles. Never surface ≤5 (record them in scan-history but do not add to Pending). Line format: `- [ ] {url} | {company} | {title} | score {n}/10 | GD {glassdoor}`
-    d. Record in `scan-history.tsv`: `{url}\t{date}\t{query_name}\t{title}\t{company}\tadded` (use status `skipped_lowscore` for scored-but-≤5 roles so they're deduped next run)
+18. **Export CSV** — write `output/scan-{YYYY-MM-DD}.csv` (create `output/` if it doesn't exist):
 
-12. **Title-filtered offers**: record in `scan-history.tsv` with status `skipped_title`
-13. **Duplicate offers**: record with status `skipped_dup`
-14. **Expired offers (Level 3)**: record with status `skipped_expired`
-15. **Excluded offers (values)**: record with status `skipped_values`
-
-16. **Export CSV** — write `output/scan-{YYYY-MM-DD}.csv` (create `output/` if it doesn't exist):
-
-    Columns in this order (v3.3 — `glassdoor` and `justification` appended so existing positional readers still work):
+    Columns in this order:
     ```
     job_title,company,salary,level,location,job_description,company_description,recruiter_contact,job_link,job_fit,mission_fit,combined,glassdoor,justification
     ```
 
-    - `combined`: the **v3.3 match_score (1–10 integer)** — this is the primary rank key now.
-    - `job_fit`: optional role-fit sub-signal (1–5); `mission_fit`: optional purpose/interest sub-signal (1–5). Fill if useful, else leave blank — they no longer drive `combined`.
+    - `combined`: the v5 **match_score (1–10 integer)** — the primary rank key.
+    - `job_fit` and `mission_fit`: legacy columns retained only for CSV compatibility; leave blank.
     - `glassdoor`: company Glassdoor overall rating (blank if unavailable).
-    - `justification`: the one-line reason for the score.
+    - `justification`: the one-line role rationale. Company fit is reported in the scan summary and Company Targets handoff.
     - Sort rows by `combined` descending.
     - Excluded / hard-rule offers (score 1–3) do NOT appear.
 
@@ -193,38 +224,37 @@ Levels are additive — run all, merge results, then deduplicate.
     - Blank if data not available — never "N/A" or "Unknown"
     - UTF-8 encoding
 
-17. **Watchlist** — Companies with mission_fit = 5 but no currently matching open role:
-    - Append a separate section at the end of the CSV: `company,mission_fit,notes,careers_url`
-    - Include in the output summary under "WATCHLIST — High mission, no current match"
+19. **Company Targets handoff** — untracked companies with `company_fit` 4–5:
+    - Pass them to `modes/populate-company-trello.md` as **New Targets**, whether or not a
+      current role passes and whether or not their careers page could be confirmed (card
+      `needs resolution` rather than skipping). Never automatically promote them to All Tracked
+      or add them to `portals.yml`. For tracked companies, update the existing All Tracked card only.
+    - Include them in the output summary under "COMPANY TARGETS — high company fit".
 
-## Extracting title and company from WebSearch results
+## Handling WebSearch prospecting results
 
-Results come in the format: `"Job Title @ Company"` or `"Job Title | Company"` or `"Job Title — Company"`.
-
-Extraction patterns by portal:
-- **Ashby**: `"Senior AI PM (Remote) @ EverAI"` → title: `Senior AI PM`, company: `EverAI`
-- **Greenhouse**: `"AI Engineer at Anthropic"` → title: `AI Engineer`, company: `Anthropic`
-- **Lever**: `"Product Manager - AI @ Temporal"` → title: `Product Manager - AI`, company: `Temporal`
-
-Generic regex: `(.+?)(?:\s*[@|—–-]\s*|\s+at\s+)(.+?)$`
+Use a search result only as a lead. Resolve it to the company's official careers page and exact
+public job-detail URL before validation. If the detail URL validates `active`, score and route the
+role normally; a surfaced role may create a Job Applications card and a separate New Targets card.
+If validation is `expired`, `uncertain`, times out, or errors, append a `closed` record to
+`data/seen-postings.jsonl`; do not score, enrich, create either card, or use the search snippet as
+evidence. Private URLs are `unverified` and are likewise not eligible for automated carding.
 
 ## Private URLs
 
-If a URL is not publicly accessible:
-1. Save the JD to `jds/{company}-{role-slug}.md`
-2. Add to pipeline.md as: `- [ ] local:jds/{company}-{role-slug}.md | {company} | {title}`
+If a URL is not publicly accessible, record it as `unverified` and do not score or card it.
+The user may supply the JD directly for a separate, manual evaluation, but it is not eligible
+for automated role surfacing.
 
 ## Scan History
 
-`data/scan-history.tsv` tracks ALL seen URLs:
+`data/scan-history.tsv` is an optional audit log; it is not a dedupe or decision source.
 
 ```
 url	first_seen	portal	title	company	status
-https://...	2026-02-10	Ashby — RevOps	RevOps Analyst	Acme	added
-https://...	2026-02-10	Greenhouse — GTM	Junior Dev	BigCo	skipped_title
-https://...	2026-02-10	Ashby — RevOps	RevOps Analyst	OldCo	skipped_dup
-https://...	2026-02-10	WebSearch — GTM	Ops Manager	ClosedCo	skipped_expired
-https://...	2026-02-10	Lever — Impl	Impl Engineer	DefenseCo	skipped_values
+https://...	2026-02-10	Ashby — Implementation	Implementation Engineer	Acme	card-candidate
+https://...	2026-02-10	Greenhouse — Technical PM	Junior Engineer	BigCo	skipped_title
+https://...	2026-02-10	Careers page	Technical Consultant	ClosedCo	closed
 ```
 
 ## Output summary
@@ -240,7 +270,7 @@ Excluded (values):         N skipped
 Expired:                   N skipped
 New offers added:          N
 
-Ranked Offers (v3.3 — 1–10 match score)
+Ranked Offers (v5 — 1–10 role match score)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  #   Company                Role                          Score  GD    Why
  1   {company}              {title}                         9   4.2   {justification}
@@ -248,8 +278,8 @@ Ranked Offers (v3.3 — 1–10 match score)
  ...
 Fallback day? {yes/no — only 6–7 surfaced because nothing scored 8–10}
 
-WATCHLIST — High mission, no current match
-  {company}  (mission: 5/5)  {careers_url}
+COMPANY TARGETS — high company fit
+  {company}  Company fit {1–5}  {careers_url}  {company_rationale}
   ...
 
 CSV: output/scan-{YYYY-MM-DD}.csv
@@ -287,20 +317,19 @@ Using the direct ATS URL when a corporate page exists can cause false 410 errors
 
 **If `careers_url` is missing:**
 1. Try the known platform pattern
-2. If that fails, WebSearch `"{company}" careers jobs`
+2. If that fails, WebSearch `"{company}" careers` to locate the official page
 3. Confirm with Playwright
 4. **Save the URL in portals.yml**
 
 **If `careers_url` returns 404 or redirects:**
 1. Note it in the output summary
-2. Try `scan_query` as fallback
-3. Flag for manual update
+2. Flag for manual update; do not use search results to enumerate roles
 
 ## Maintaining portals.yml
 
 - **Always save `careers_url`** when adding a new company
-- Add queries as new portals or target roles are discovered
-- Disable noisy queries with `enabled: false`
+- Add web-search queries only for company and official-careers-page discovery
+- Disable noisy company-discovery queries with `enabled: false`
 - Adjust title keywords as target roles evolve
 - Add companies to `tracked_companies` when you want to monitor them closely
 - Periodically verify `careers_url` — companies change ATS platforms
@@ -310,7 +339,14 @@ Using the direct ATS URL when a corporate page exists can cause false 410 errors
 
 This mode produces the ranked, rubric-scored roles (the 8–10 set, or the 6–7 fallback) and the CSV. It does **not** talk to Notion or Trello directly. After surfacing:
 
-- Pass the surfaced roles to **`modes/populate-trello.md`** to create/update cards on the job-search board.
+- Pass the surfaced roles, including `match_score` and required `fit_summary`, to
+  **`modes/populate-trello.md`** to create/update cards on the job-search board.
+- Pass untracked prospecting companies with `company_fit` 4–5 to
+  **`modes/populate-company-trello.md`** as New Targets; update existing All Tracked cards for
+  tracked companies.
 - If dual-writing, also pass them to **`modes/populate-notion.md`**.
 
-Only roles that passed the surfacing gate (step 11c) are handed off. Excluded / low-score roles are recorded in the ledger and never carded. The populate mode owns all board-specific field mapping and dedup-against-board logic, so no carding logic lives outside the repo.
+Only roles with an `active` validation result and that passed the surfacing gate are handed
+off. Excluded, closed, unverified, and low-score roles are recorded in the ledger and never
+carded. The populate mode owns all board-specific field mapping and dedup-against-board logic,
+so no carding logic lives outside the repo.

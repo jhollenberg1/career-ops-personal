@@ -3,6 +3,8 @@ cv.md
 data/applications.md
 data/pipeline.md
 data/scan-history.tsv
+data/seen-postings.jsonl
+data/companies.csv
 reports/*.md
 !reports/.gitkeep
 output/*
@@ -24,6 +26,11 @@ writing-samples/*
 config/profile.yml
 portals.yml
 modes/_profile.md
+evals/golden-set.csv
+evals/report.md
+resume/*
+.claude/settings.json
+portals.yml.bak
 .update-dismissed
 .update-lock
 

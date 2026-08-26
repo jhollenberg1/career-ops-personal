@@ -9,9 +9,11 @@ version-controlled.
 Run the career-ops open-role scan from the repo at `~/Projects/career-ops`. Follow the repo
 files as the single source of truth; do not improvise a scan.
 
-1. Read and follow `modes/_shared.md` + `modes/role-scan.md` end to end. That mode reads
-   `portals.yml`, `config/profile.yml`, `modes/_profile.md`, and scores every candidate
-   against `evals/rubric.md` (v3.3) before surfacing. Do not card any role it did not surface.
+1. Read and follow `modes/_shared.md` + `modes/role-scan.md` end to end. First import any
+   manually approved Company Targets **📚 All Tracked** cards missing from `portals.yml`, after
+   verifying their official careers URLs. Then scan tracked companies and run the untracked-company
+   WebSearch prospecting lane. Score every candidate against `evals/rubric.md` (v5) before
+   surfacing. Do not card any role it did not surface.
 2. For the surfaced set, follow `modes/populate-trello.md` to card onto the Trello
    "Job Applications" board, then `modes/populate-notion.md` to card into the Notion
    "Job Search" data source (dual-write).

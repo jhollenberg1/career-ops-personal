@@ -24,9 +24,9 @@
 
 ---
 
-## Scoring System
+## Application Evaluation Score (1–5)
 
-The evaluation uses 6 blocks (A-F) with a global score of 1-5:
+The detailed application evaluation uses 6 blocks (A-F) with an `application_score` of 1–5. This is separate from the 1–10 `match_score` used by `evals/rubric.md` for role-scan surfacing; never compare or average them.
 
 | Dimension | What it measures |
 |-----------|-----------------|

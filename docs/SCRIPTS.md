@@ -1,6 +1,8 @@
 # Scripts Reference
 
-All scripts live in the project root as `.mjs` modules and are exposed via `npm run <name>`.
+Most commands are exposed through `npm run <name>`. The scanner is intentionally
+split into small modules under `scanner/`; use the npm commands rather than calling
+those internals directly.
 
 ## Quick Reference
 
@@ -17,7 +19,11 @@ All scripts live in the project root as `.mjs` modules and are exposed via `npm 
 | `npm run update` | `update-system.mjs apply` | Apply upstream update |
 | `npm run rollback` | `update-system.mjs rollback` | Rollback last update |
 | `npm run liveness` | `check-liveness.mjs` | Test if job URLs are still active |
-| `npm run discover` | `discover.mjs` | Zero-token portal scanner |
+| `npm run discover` | `scanner/scan.mjs` | Scan the active watchlist |
+| `npm run discover:all` | `scanner/scan.mjs --all` | Run the broader weekly scan |
+| `npm run scan` | `scanner/scan.mjs` | Alias for `discover` |
+| `npm run scan:test` | `scanner/test/core.test.mjs` | Test scanner filtering and normalization |
+| `npm run validate-postings -- URL...` | `validate-postings.mjs` | Verify exact public job-detail URLs before scoring or carding |
 
 ---
 
@@ -178,12 +184,20 @@ Each URL gets a verdict: `active`, `expired`, or `uncertain` with a reason.
 
 ---
 
-## scan
+## discover
 
-Zero-token portal scanner. Hits ATS APIs (Greenhouse, Ashby, Lever) and career pages directly — no LLM tokens consumed. Reads `portals.yml` for target companies and search queries, outputs matching listings to stdout and optionally appends to `data/pipeline.md`.
+Zero-token portal scanner. It reads `portals.yml`, fetches supported ATS sources,
+filters the results, verifies candidate posting URLs in Chromium, and appends verified
+open roles to `data/pipeline.md`. It also writes a scan report under `output/scans/`.
 
 ```bash
-npm run discover
+npm run discover       # daily active watchlist
+npm run discover:all   # weekly full API sweep
+npm run scan -- --dry-run --no-verify  # inspect a scan without changing files
+npm run scan -- --company "Example Co" # scan one configured company
 ```
 
-**Exit codes:** `0` scan completed, `1` configuration error or no portals.yml found.
+Discovery only fills the candidate queue. `modes/role-scan.md` applies the human-fit
+rubric and decides whether a role is surfaced.
+
+**Exit codes:** `0` scan completed, `1` configuration or runtime error, `2` one or more configured sources failed or were unavailable.

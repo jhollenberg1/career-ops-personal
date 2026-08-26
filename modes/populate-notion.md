@@ -4,9 +4,10 @@ Takes the rubric-scored, surfaced roles produced by `modes/role-scan.md` (step 1
 and upserts them into the Notion **"Job Search"** data source. This mode owns all
 Notion field mapping and dedup — no carding logic lives outside the repo.
 
-> **Never card a role that was not scored by `evals/rubric.md`.** Only roles that passed
-> the surfacing gate in `modes/role-scan.md` step 11c (match_score 8–10, or the 6–7 fallback
-> set) are eligible. Excluded / low-score roles are recorded in the ledger and never carded.
+> **Never create a page for an unvalidated role.** A handoff must have passed the rubric
+> surfacing gate and include `official_careers_url`, `detail_url`, and an `active`
+> validation result with `finalUrl` and `checkedAt`. Excluded, closed, and unverified roles
+> are recorded locally and never carded.
 
 ## Target
 - Data source: **Job Search** — `collection://deaa8821-6086-4758-ac3f-f9037f7800c7`
@@ -26,14 +27,15 @@ Notion field mapping and dedup — no carding logic lives outside the repo.
 | `Type` (select) | `Role` |
 | `Stage` (select) | `Researching` |
 | `Applicability` (select) | 8–10 → `Pass`; 4–7 → `Needs review` (1–3 are never carded) |
-| `Fit score` (number) | the v3.3 `match_score` (1–10) |
+| `Fit score` (number) | the v4 `match_score` (1–10) |
 | `Role fit` (number) | optional `job_fit` sub-signal (1–5), else blank |
 | `Company fit` (number) | optional `mission_fit` sub-signal (1–5), else blank |
 | `Comp band` (select) | from salary: <80k `Under 80k reject` · 80–100k `80-100k workable` · 100–130k `100-130k fair` · 130–180k `130-180k target` · 180k+ `180k+ ideal` · none `Not listed` |
 | `Interest` (select) | optional purpose/interest read: `High` / `Medium` / `Low`, else blank |
 
 Page body: one-line **justification** (the rubric rationale), then the JD summary
-(`job_description`), location/work-model, comp if stated, and `glassdoor` rating if found.
+(`job_description`), location/work-model, comp if stated, `glassdoor` rating if found, and
+`Verified: {verification.checkedAt} — {verification.finalUrl}`.
 Leave `Recruiter*`, `Gap notes`, and `Next step` blank — Phase B (`apply-prep`) fills those.
 
 ## After carding

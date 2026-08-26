@@ -69,6 +69,10 @@ const scripts = [
   { name: 'dedup-tracker.mjs', expectExit: 0 },
   { name: 'merge-tracker.mjs', expectExit: 0 },
   { name: 'update-system.mjs check', expectExit: 0 },
+  { name: 'scanner/test/core.test.mjs', expectExit: 0 },
+  { name: '--check scanner/scan.mjs', expectExit: 0 },
+  { name: '--check scanner/report.mjs', expectExit: 0 },
+  { name: '--check scanner/verify.mjs', expectExit: 0 },
 ];
 
 for (const { name, allowFail } of scripts) {

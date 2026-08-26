@@ -14,8 +14,11 @@
     "update": "node update-system.mjs apply",
     "rollback": "node update-system.mjs rollback",
     "liveness": "node check-liveness.mjs",
-    "discover": "node discover.mjs",
-    "scan": "node discover.mjs",
+    "discover": "node scanner/scan.mjs",
+    "discover:all": "node scanner/scan.mjs --all",
+    "scan": "node scanner/scan.mjs",
+    "scan:test": "node scanner/test/core.test.mjs",
+    "validate-postings": "node validate-postings.mjs",
     "gemini:eval": "node gemini-eval.mjs"
   },
   "keywords": [
