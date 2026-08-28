@@ -174,8 +174,9 @@ Levels are additive — run all, merge results, then deduplicate.
          - **tech_component**: degree of technical/data work required (high / medium / low)
          - **relationship_component**: degree of client or external stakeholder relationship work (high / medium / low)
          - **hard_requirements**: requirements the candidate genuinely does NOT meet (certs, licenses, domain expertise). Blank if none.
-         - **sector_classification**: company sector for purpose/mission scoring
-         - **glassdoor_rating**: company rating if readily available; blank if unavailable. It is supporting context, not a gate.
+         - **sector_classification**: company sector for mission-bonus and ethics assessment
+         - **culture_evidence**: employee-review rating if readily available, plus review volume, review recency, and recurring themes about leadership, workload, and psychological safety. Record the source(s) and whether the evidence is positive, negative, or insufficient.
+         - **glassdoor_rating**: company rating if readily available; blank if unavailable. It is supporting context, not a gate by itself.
 
     b. **Score using `evals/rubric.md` v5 (the sole scoring specification):** produce
        `company_fit` (1–5), company disposition and rationale, plus `match_score` (1–10),
@@ -183,6 +184,7 @@ Levels are additive — run all, merge results, then deduplicate.
        role earned its score and naming its main caveat. The `fit_summary` is required in
        the Trello handoff for every surfaced role. Do not use the legacy blended `job_fit`/`mission_fit` model,
        `scan-history.tsv`, or `modes/_profile.md` as scoring specifications.
+       Mission alignment is a positive signal, not a requirement: do not cap a viable role because a company is commercial or outside the target sectors. For an outside-sector company, include the culture-evidence conclusion in the company rationale. If culture evidence is insufficient, set the role disposition to `Needs review` rather than rejecting it solely for that reason; affirmative negative culture evidence lowers company fit and may prevent surfacing.
 
     c. **Apply the v5 routing rules.** For an untracked company from Level 3 with `company_fit`
        4–5, hand it to the Company Targets workflow as a **New Target** even if the role does

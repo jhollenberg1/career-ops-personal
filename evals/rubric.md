@@ -35,7 +35,7 @@ Assess the company independently of the current opening.
 
 | Dimension | What to assess |
 |---|---|
-| Mission and ethics | Alignment with Joshua's target sectors and values; no excluded or ethically disqualifying business model. |
+| Mission and ethics | Mission alignment is a positive signal; its absence is neutral. Require no excluded or ethically disqualifying business model. |
 | Product clarity and interest | Can the product and its customer impact be explained plainly? Is the problem worth spending years on? |
 | Culture and working model | Evidence of sustainable workload, respectful leadership, and NYC/remote compatibility. |
 | Career platform | Likelihood of meaningful client-facing technical, implementation, TPM, or adjacent paths over the next 12–24 months. |
@@ -49,7 +49,7 @@ Assess the company independently of the current opening.
 | 2 | Weak target: product, culture, ethics, location, or career path is materially unattractive. |
 | 1 | Do not target: hard ethical conflict, incompatible work model, or no meaningful interest. |
 
-Unknown culture, compensation, or stability lowers confidence rather than automatically lowering `company_fit`; affirmative negative evidence does lower it.
+Mission alignment can raise `company_fit`, but lack of a social mission must not lower it or cap an otherwise viable role. Unknown culture, compensation, or stability lowers confidence rather than automatically lowering `company_fit`; affirmative negative evidence does lower it. For companies outside Joshua's target sectors, assess culture from employee-review rating, meaningful review volume and recency, and recurring themes—not a rating alone. Insufficient culture evidence produces `Needs review`; repeated burnout, punitive leadership, bait-and-switch, or unsustainable-workload signals lower `company_fit`.
 
 ## Role match score (1–10)
 
@@ -60,7 +60,7 @@ Start from the strongest applicable lane, then apply attainability, relationship
 | Implementation / Solutions / Integration / Professional Services / Technical Consultant | 8 | Core bridge: technical credibility applied to client outcomes. |
 | TPM / Technical Project or Program Management | 7 | Raise when scope is stakeholder-heavy and requirements are attainable. |
 | Sales Engineer / consultative pre-sales | 7 | Keep if discovery and technical credibility matter; dock for a hard sales-history requirement or quota pressure. |
-| FDE / Deployment | 7 | Raise for client deployment and broad problem-solving; lower for heavy systems design, travel, on-call, or startup intensity. |
+| FDE / Deployment | 7 | Core lane alongside implementation and solutions work. Raise for client deployment and broad problem-solving; lower for heavy systems design, travel, on-call, or startup intensity. |
 | Mission-aligned consulting | 6 | Raise only with credible hours/staffing and junior-to-mid scope. |
 | Data / software engineering | 5 | Raise only for a compelling, understandable product plus integration, customer, or real-world problem work. Deep infrastructure, SRE, systems design, or on-call-heavy work caps at 6. |
 | RevOps / GTM Ops / partnerships / BizOps | 4 | Adjacent but weakly attainable; do not surface without an unusually direct bridge. |
@@ -70,7 +70,7 @@ Raise for client discovery, implementation ownership, facilitation, stakeholder 
 `company_fit` is supporting context only:
 
 - A company fit of 4–5 can raise an already viable role by at most 1 point.
-- A company fit of 1–2 caps a role at 5 unless Joshua explicitly opts in.
+- A company fit of 1–2 caps a role at 5 only when it results from affirmative negative evidence (ethics, culture, work model, product, or stability), not from a lack of mission alignment or missing culture data.
 - Company mission, culture, or compensation never overrides a hard role gate.
 
 ## Calibration rules
