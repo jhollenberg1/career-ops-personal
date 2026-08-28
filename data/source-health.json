@@ -32,10 +32,10 @@
     },
     "Nava": {
       "source": "lever",
-      "lastAttempt": "2026-08-26T16:31:17.395Z",
+      "lastAttempt": "2026-08-28T07:38:33.431Z",
       "lastSuccess": "2026-08-21T19:14:20.480Z",
-      "lastFailure": "2026-08-26T16:31:17.395Z",
-      "consecutiveFailures": 4,
+      "lastFailure": "2026-08-28T07:38:33.431Z",
+      "consecutiveFailures": 5,
       "lastJobCount": 0,
       "status": "failed",
       "error": "fetch failed"
@@ -102,10 +102,10 @@
     },
     "Newsela": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-26T16:31:17.395Z",
+      "lastAttempt": "2026-08-28T07:38:33.431Z",
       "lastSuccess": "2026-08-21T19:14:20.480Z",
-      "lastFailure": "2026-08-26T16:31:17.395Z",
-      "consecutiveFailures": 4,
+      "lastFailure": "2026-08-28T07:38:33.431Z",
+      "consecutiveFailures": 5,
       "lastJobCount": 0,
       "status": "failed",
       "error": "fetch failed"
@@ -192,10 +192,10 @@
     },
     "Watershed": {
       "source": "ashby",
-      "lastAttempt": "2026-08-26T16:31:17.395Z",
+      "lastAttempt": "2026-08-28T07:38:33.431Z",
       "lastSuccess": "2026-08-21T19:14:20.480Z",
-      "lastFailure": "2026-08-26T16:31:17.395Z",
-      "consecutiveFailures": 4,
+      "lastFailure": "2026-08-28T07:38:33.431Z",
+      "consecutiveFailures": 5,
       "lastJobCount": 0,
       "status": "failed",
       "error": "fetch failed"
@@ -252,7 +252,7 @@
     },
     "Afresh": {
       "source": "none",
-      "lastAttempt": "2026-08-26T16:31:17.395Z",
+      "lastAttempt": "2026-08-28T07:38:33.431Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -312,10 +312,10 @@
     },
     "Propel": {
       "source": "ashby",
-      "lastAttempt": "2026-08-26T16:31:17.395Z",
+      "lastAttempt": "2026-08-28T07:38:33.431Z",
       "lastSuccess": "2026-08-21T19:14:20.480Z",
-      "lastFailure": "2026-08-26T16:31:17.395Z",
-      "consecutiveFailures": 4,
+      "lastFailure": "2026-08-28T07:38:33.431Z",
+      "consecutiveFailures": 5,
       "lastJobCount": 0,
       "status": "failed",
       "error": "fetch failed"
@@ -372,7 +372,7 @@
     },
     "Ad Hoc": {
       "source": "none",
-      "lastAttempt": "2026-08-26T16:31:17.395Z",
+      "lastAttempt": "2026-08-28T07:38:33.431Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -412,7 +412,7 @@
     },
     "Code for America": {
       "source": "none",
-      "lastAttempt": "2026-08-26T16:31:17.395Z",
+      "lastAttempt": "2026-08-28T07:38:33.431Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -472,7 +472,7 @@
     },
     "Recidiviz": {
       "source": "none",
-      "lastAttempt": "2026-08-26T16:31:17.395Z",
+      "lastAttempt": "2026-08-28T07:38:33.431Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -532,7 +532,7 @@
     },
     "JusticeText": {
       "source": "none",
-      "lastAttempt": "2026-08-26T16:31:17.395Z",
+      "lastAttempt": "2026-08-28T07:38:33.431Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -542,7 +542,7 @@
     },
     "Benefits Data Trust": {
       "source": "none",
-      "lastAttempt": "2026-08-26T16:31:17.395Z",
+      "lastAttempt": "2026-08-28T07:38:33.431Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -692,7 +692,7 @@
     },
     "PayIt": {
       "source": "none",
-      "lastAttempt": "2026-08-26T16:31:17.395Z",
+      "lastAttempt": "2026-08-28T07:38:33.431Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -722,30 +722,30 @@
     },
     "Runwise": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-26T16:31:17.395Z",
+      "lastAttempt": "2026-08-28T07:38:33.431Z",
       "lastSuccess": "2026-08-21T19:14:20.480Z",
-      "lastFailure": "2026-08-26T16:31:17.395Z",
-      "consecutiveFailures": 4,
+      "lastFailure": "2026-08-28T07:38:33.431Z",
+      "consecutiveFailures": 5,
       "lastJobCount": 0,
       "status": "failed",
       "error": "fetch failed"
     },
     "Raptor Maps": {
       "source": "lever",
-      "lastAttempt": "2026-08-26T16:31:17.395Z",
+      "lastAttempt": "2026-08-28T07:38:33.431Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-26T16:31:17.395Z",
-      "consecutiveFailures": 7,
+      "lastFailure": "2026-08-28T07:38:33.431Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
       "error": "fetch failed"
     },
     "Flashfood": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-26T16:31:17.395Z",
+      "lastAttempt": "2026-08-28T07:38:33.431Z",
       "lastSuccess": "2026-08-21T19:14:20.480Z",
-      "lastFailure": "2026-08-26T16:31:17.395Z",
-      "consecutiveFailures": 4,
+      "lastFailure": "2026-08-28T07:38:33.431Z",
+      "consecutiveFailures": 5,
       "lastJobCount": 0,
       "status": "failed",
       "error": "fetch failed"
@@ -772,7 +772,7 @@
     },
     "New Classrooms": {
       "source": "none",
-      "lastAttempt": "2026-08-26T16:31:17.395Z",
+      "lastAttempt": "2026-08-28T07:38:33.431Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -782,7 +782,7 @@
     },
     "Choco": {
       "source": "none",
-      "lastAttempt": "2026-08-26T16:31:17.395Z",
+      "lastAttempt": "2026-08-28T07:38:33.431Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -792,7 +792,7 @@
     },
     "Opportunity@Work": {
       "source": "none",
-      "lastAttempt": "2026-08-26T16:31:17.395Z",
+      "lastAttempt": "2026-08-28T07:38:33.431Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -802,7 +802,7 @@
     },
     "Euna Solutions": {
       "source": "none",
-      "lastAttempt": "2026-08-26T16:31:17.395Z",
+      "lastAttempt": "2026-08-28T07:38:33.431Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -812,7 +812,7 @@
     },
     "Generation": {
       "source": "none",
-      "lastAttempt": "2026-08-26T16:31:17.395Z",
+      "lastAttempt": "2026-08-28T07:38:33.431Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -822,7 +822,7 @@
     },
     "Informed K12": {
       "source": "none",
-      "lastAttempt": "2026-08-26T16:31:17.395Z",
+      "lastAttempt": "2026-08-28T07:38:33.431Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
