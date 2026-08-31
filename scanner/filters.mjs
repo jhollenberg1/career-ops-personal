@@ -1,5 +1,11 @@
 export function buildTitleFilter(titleFilter = {}) {
-  const positive = (titleFilter.positive || []).map(value => value.toLowerCase());
+  // `positive` is retained for backward-compatible user configurations. Newer
+  // profiles separate high-confidence Core titles from JD-led Explore titles.
+  const positive = [
+    ...(titleFilter.positive || []),
+    ...(titleFilter.core || []),
+    ...(titleFilter.explore || []),
+  ].map(value => value.toLowerCase());
   const negative = (titleFilter.negative || []).map(value => value.toLowerCase());
   return title => {
     const value = title.toLowerCase();

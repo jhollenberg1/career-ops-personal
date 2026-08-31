@@ -2,7 +2,7 @@
   "sources": {
     "Oscar Health": {
       "source": "none",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -12,157 +12,157 @@
     },
     "Cityblock Health": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Spring Health": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Nava": {
       "source": "lever",
-      "lastAttempt": "2026-08-28T07:38:33.431Z",
-      "lastSuccess": "2026-08-21T19:14:20.480Z",
-      "lastFailure": "2026-08-28T07:38:33.431Z",
-      "consecutiveFailures": 5,
+      "lastAttempt": "2026-08-31T06:14:28.721Z",
+      "lastSuccess": "2026-08-31T06:14:28.721Z",
+      "lastFailure": "2026-08-28T21:17:59.158Z",
+      "consecutiveFailures": 0,
       "lastJobCount": 0,
-      "status": "failed",
-      "error": "fetch failed"
+      "status": "success",
+      "error": null
     },
     "Transcarent": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Garner Health": {
       "source": "ashby",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Turquoise Health": {
       "source": "ashby",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Stellar Health": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Headway": {
       "source": "ashby",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
-      "lastSuccess": "2026-08-21T19:14:20.480Z",
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 2,
-      "lastJobCount": 0,
-      "status": "failed",
-      "error": "fetch failed"
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
+      "lastSuccess": "2026-08-28T20:38:13.976Z",
+      "lastFailure": "2026-08-28T20:37:25.535Z",
+      "consecutiveFailures": 0,
+      "lastJobCount": 84,
+      "status": "success",
+      "error": null
     },
     "Brightline": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Newsela": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-28T07:38:33.431Z",
-      "lastSuccess": "2026-08-21T19:14:20.480Z",
-      "lastFailure": "2026-08-28T07:38:33.431Z",
-      "consecutiveFailures": 5,
-      "lastJobCount": 0,
-      "status": "failed",
-      "error": "fetch failed"
+      "lastAttempt": "2026-08-31T06:14:28.721Z",
+      "lastSuccess": "2026-08-31T06:14:28.721Z",
+      "lastFailure": "2026-08-28T21:17:59.158Z",
+      "consecutiveFailures": 0,
+      "lastJobCount": 19,
+      "status": "success",
+      "error": null
     },
     "Nearpod": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Handshake": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Coursera": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
-      "lastSuccess": "2026-08-21T19:14:20.480Z",
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 2,
-      "lastJobCount": 0,
-      "status": "failed",
-      "error": "fetch failed"
+      "lastAttempt": "2026-08-31T06:14:28.721Z",
+      "lastSuccess": "2026-08-31T06:14:28.721Z",
+      "lastFailure": "2026-08-28T20:37:25.535Z",
+      "consecutiveFailures": 0,
+      "lastJobCount": 20,
+      "status": "success",
+      "error": null
     },
     "Duolingo": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
-      "lastSuccess": "2026-08-21T19:14:20.480Z",
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 2,
-      "lastJobCount": 0,
-      "status": "failed",
-      "error": "fetch failed"
+      "lastAttempt": "2026-08-31T06:14:28.721Z",
+      "lastSuccess": "2026-08-31T06:14:28.721Z",
+      "lastFailure": "2026-08-28T20:37:25.535Z",
+      "consecutiveFailures": 0,
+      "lastJobCount": 83,
+      "status": "success",
+      "error": null
     },
     "Synthesis": {
       "source": "ashby",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Khan Academy": {
       "source": "none",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -172,97 +172,97 @@
     },
     "Panorama Education": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Arcadia": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Watershed": {
       "source": "ashby",
-      "lastAttempt": "2026-08-28T07:38:33.431Z",
-      "lastSuccess": "2026-08-21T19:14:20.480Z",
-      "lastFailure": "2026-08-28T07:38:33.431Z",
-      "consecutiveFailures": 5,
+      "lastAttempt": "2026-08-28T21:17:59.158Z",
+      "lastSuccess": "2026-08-28T20:38:13.976Z",
+      "lastFailure": "2026-08-28T21:17:59.158Z",
+      "consecutiveFailures": 1,
       "lastJobCount": 0,
       "status": "failed",
       "error": "fetch failed"
     },
     "Charm Industrial": {
       "source": "ashby",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Crusoe Energy": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Pachama": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "ClimateAI": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Swell Energy": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Afresh": {
-      "source": "none",
-      "lastAttempt": "2026-08-28T07:38:33.431Z",
-      "lastSuccess": null,
-      "lastFailure": null,
+      "source": "greenhouse",
+      "lastAttempt": "2026-08-31T06:14:28.721Z",
+      "lastSuccess": "2026-08-31T06:14:28.721Z",
+      "lastFailure": "2026-08-28T21:17:59.158Z",
       "consecutiveFailures": 0,
-      "lastJobCount": 0,
-      "status": "unavailable",
+      "lastJobCount": 16,
+      "status": "success",
       "error": null
     },
     "Apeel Sciences": {
       "source": "none",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -272,7 +272,7 @@
     },
     "Full Harvest": {
       "source": "none",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -282,17 +282,17 @@
     },
     "Misfits Market": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
-      "lastSuccess": "2026-08-21T19:14:20.480Z",
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 2,
-      "lastJobCount": 0,
-      "status": "failed",
-      "error": "fetch failed"
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
+      "lastSuccess": "2026-08-28T20:38:13.976Z",
+      "lastFailure": "2026-08-28T20:37:25.535Z",
+      "consecutiveFailures": 0,
+      "lastJobCount": 89,
+      "status": "success",
+      "error": null
     },
     "Too Good To Go": {
       "source": "none",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -302,7 +302,7 @@
     },
     "Divert": {
       "source": "none",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -312,57 +312,57 @@
     },
     "Propel": {
       "source": "ashby",
-      "lastAttempt": "2026-08-28T07:38:33.431Z",
-      "lastSuccess": "2026-08-21T19:14:20.480Z",
-      "lastFailure": "2026-08-28T07:38:33.431Z",
-      "consecutiveFailures": 5,
+      "lastAttempt": "2026-08-28T21:17:59.158Z",
+      "lastSuccess": "2026-08-28T20:38:13.976Z",
+      "lastFailure": "2026-08-28T21:17:59.158Z",
+      "consecutiveFailures": 1,
       "lastJobCount": 0,
       "status": "failed",
       "error": "fetch failed"
     },
     "Possible Finance": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Even (by Walmart)": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Steady": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Greenwood": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Accion Opportunity Fund": {
       "source": "none",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -372,7 +372,7 @@
     },
     "Ad Hoc": {
       "source": "none",
-      "lastAttempt": "2026-08-28T07:38:33.431Z",
+      "lastAttempt": "2026-08-28T21:17:59.158Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -382,7 +382,7 @@
     },
     "Civilla": {
       "source": "none",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -392,27 +392,27 @@
     },
     "Bonterra": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Benevity": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Code for America": {
       "source": "none",
-      "lastAttempt": "2026-08-28T07:38:33.431Z",
+      "lastAttempt": "2026-08-28T21:17:59.158Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -422,7 +422,7 @@
     },
     "Bridgespan Group": {
       "source": "none",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -432,7 +432,7 @@
     },
     "FSG": {
       "source": "none",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -442,7 +442,7 @@
     },
     "Dalberg": {
       "source": "none",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -452,7 +452,7 @@
     },
     "Tidal Basin Group": {
       "source": "none",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -462,7 +462,7 @@
     },
     "Results for America": {
       "source": "none",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -472,7 +472,7 @@
     },
     "Recidiviz": {
       "source": "none",
-      "lastAttempt": "2026-08-28T07:38:33.431Z",
+      "lastAttempt": "2026-08-28T21:17:59.158Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -482,7 +482,7 @@
     },
     "Tyler Technologies": {
       "source": "none",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -492,7 +492,7 @@
     },
     "Granicus": {
       "source": "none",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -502,7 +502,7 @@
     },
     "OpenGov": {
       "source": "none",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -512,7 +512,7 @@
     },
     "Mark43": {
       "source": "none",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -522,7 +522,7 @@
     },
     "Civitech": {
       "source": "none",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -532,7 +532,7 @@
     },
     "JusticeText": {
       "source": "none",
-      "lastAttempt": "2026-08-28T07:38:33.431Z",
+      "lastAttempt": "2026-08-28T21:17:59.158Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -542,7 +542,7 @@
     },
     "Benefits Data Trust": {
       "source": "none",
-      "lastAttempt": "2026-08-28T07:38:33.431Z",
+      "lastAttempt": "2026-08-28T21:17:59.158Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -552,7 +552,7 @@
     },
     "Urbint": {
       "source": "none",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -562,107 +562,107 @@
     },
     "Axle Health": {
       "source": "ashby",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Ro": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Noom": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Alma": {
       "source": "ashby",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Kindbody": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Olo": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Carbon Direct": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
-      "lastSuccess": "2026-08-21T19:14:20.480Z",
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 2,
-      "lastJobCount": 0,
-      "status": "failed",
-      "error": "fetch failed"
+      "lastAttempt": "2026-08-31T06:14:28.721Z",
+      "lastSuccess": "2026-08-31T06:14:28.721Z",
+      "lastFailure": "2026-08-28T20:37:25.535Z",
+      "consecutiveFailures": 0,
+      "lastJobCount": 7,
+      "status": "success",
+      "error": null
     },
     "Sealed": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "BlocPower": {
       "source": "lever",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "David Energy": {
       "source": "ashby",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
-      "lastSuccess": "2026-08-21T19:14:20.480Z",
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 2,
-      "lastJobCount": 0,
-      "status": "failed",
-      "error": "fetch failed"
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
+      "lastSuccess": "2026-08-28T20:38:13.976Z",
+      "lastFailure": "2026-08-28T20:37:25.535Z",
+      "consecutiveFailures": 0,
+      "lastJobCount": 2,
+      "status": "success",
+      "error": null
     },
     "WeaveGrid": {
       "source": "none",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -672,17 +672,17 @@
     },
     "Guild Education": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 5,
+      "lastFailure": "2026-08-28T20:38:13.976Z",
+      "consecutiveFailures": 8,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Esusu": {
       "source": "none",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -692,7 +692,7 @@
     },
     "PayIt": {
       "source": "none",
-      "lastAttempt": "2026-08-28T07:38:33.431Z",
+      "lastAttempt": "2026-08-28T21:17:59.158Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -702,17 +702,17 @@
     },
     "Ellevation Education": {
       "source": "lever",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
-      "lastSuccess": "2026-08-21T19:14:20.480Z",
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 2,
-      "lastJobCount": 0,
-      "status": "failed",
-      "error": "fetch failed"
+      "lastAttempt": "2026-08-31T06:14:28.721Z",
+      "lastSuccess": "2026-08-31T06:14:28.721Z",
+      "lastFailure": "2026-08-28T20:37:25.535Z",
+      "consecutiveFailures": 0,
+      "lastJobCount": 3,
+      "status": "success",
+      "error": null
     },
     "Promise": {
       "source": "none",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -722,57 +722,57 @@
     },
     "Runwise": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-28T07:38:33.431Z",
-      "lastSuccess": "2026-08-21T19:14:20.480Z",
-      "lastFailure": "2026-08-28T07:38:33.431Z",
-      "consecutiveFailures": 5,
-      "lastJobCount": 0,
-      "status": "failed",
-      "error": "fetch failed"
+      "lastAttempt": "2026-08-31T06:14:28.721Z",
+      "lastSuccess": "2026-08-31T06:14:28.721Z",
+      "lastFailure": "2026-08-28T21:17:59.158Z",
+      "consecutiveFailures": 0,
+      "lastJobCount": 5,
+      "status": "success",
+      "error": null
     },
     "Raptor Maps": {
       "source": "lever",
-      "lastAttempt": "2026-08-28T07:38:33.431Z",
+      "lastAttempt": "2026-08-28T21:17:59.158Z",
       "lastSuccess": null,
-      "lastFailure": "2026-08-28T07:38:33.431Z",
-      "consecutiveFailures": 8,
+      "lastFailure": "2026-08-28T21:17:59.158Z",
+      "consecutiveFailures": 14,
       "lastJobCount": 0,
       "status": "failed",
       "error": "fetch failed"
     },
     "Flashfood": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-28T07:38:33.431Z",
-      "lastSuccess": "2026-08-21T19:14:20.480Z",
-      "lastFailure": "2026-08-28T07:38:33.431Z",
-      "consecutiveFailures": 5,
-      "lastJobCount": 0,
-      "status": "failed",
-      "error": "fetch failed"
+      "lastAttempt": "2026-08-31T06:14:28.721Z",
+      "lastSuccess": "2026-08-31T06:14:28.721Z",
+      "lastFailure": "2026-08-28T21:17:59.158Z",
+      "consecutiveFailures": 0,
+      "lastJobCount": 4,
+      "status": "success",
+      "error": null
     },
     "Edmentum": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
-      "lastSuccess": "2026-08-21T19:14:20.480Z",
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 2,
-      "lastJobCount": 0,
-      "status": "failed",
-      "error": "fetch failed"
+      "lastAttempt": "2026-08-31T06:14:28.721Z",
+      "lastSuccess": "2026-08-31T06:14:28.721Z",
+      "lastFailure": "2026-08-28T20:37:25.535Z",
+      "consecutiveFailures": 0,
+      "lastJobCount": 30,
+      "status": "success",
+      "error": null
     },
     "LISC": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
-      "lastSuccess": "2026-08-21T19:14:20.480Z",
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 2,
-      "lastJobCount": 0,
-      "status": "failed",
-      "error": "fetch failed"
+      "lastAttempt": "2026-08-31T06:14:28.721Z",
+      "lastSuccess": "2026-08-31T06:14:28.721Z",
+      "lastFailure": "2026-08-28T20:37:25.535Z",
+      "consecutiveFailures": 0,
+      "lastJobCount": 9,
+      "status": "success",
+      "error": null
     },
     "New Classrooms": {
       "source": "none",
-      "lastAttempt": "2026-08-28T07:38:33.431Z",
+      "lastAttempt": "2026-08-28T21:17:59.158Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -782,7 +782,7 @@
     },
     "Choco": {
       "source": "none",
-      "lastAttempt": "2026-08-28T07:38:33.431Z",
+      "lastAttempt": "2026-08-28T21:17:59.158Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -792,7 +792,7 @@
     },
     "Opportunity@Work": {
       "source": "none",
-      "lastAttempt": "2026-08-28T07:38:33.431Z",
+      "lastAttempt": "2026-08-28T21:17:59.158Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -802,7 +802,7 @@
     },
     "Euna Solutions": {
       "source": "none",
-      "lastAttempt": "2026-08-28T07:38:33.431Z",
+      "lastAttempt": "2026-08-28T21:17:59.158Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -812,7 +812,7 @@
     },
     "Generation": {
       "source": "none",
-      "lastAttempt": "2026-08-28T07:38:33.431Z",
+      "lastAttempt": "2026-08-28T21:17:59.158Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -822,7 +822,7 @@
     },
     "Informed K12": {
       "source": "none",
-      "lastAttempt": "2026-08-28T07:38:33.431Z",
+      "lastAttempt": "2026-08-28T21:17:59.158Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -832,7 +832,7 @@
     },
     "inquirED": {
       "source": "none",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -842,47 +842,47 @@
     },
     "GovWell": {
       "source": "ashby",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
-      "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 1,
-      "lastJobCount": 0,
-      "status": "failed",
-      "error": "fetch failed"
+      "lastAttempt": "2026-08-31T06:14:28.721Z",
+      "lastSuccess": "2026-08-31T06:14:28.721Z",
+      "lastFailure": "2026-08-28T20:37:25.535Z",
+      "consecutiveFailures": 0,
+      "lastJobCount": 15,
+      "status": "success",
+      "error": null
     },
     "Fluxx": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
-      "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 1,
-      "lastJobCount": 0,
-      "status": "failed",
-      "error": "fetch failed"
+      "lastAttempt": "2026-08-31T06:14:28.721Z",
+      "lastSuccess": "2026-08-31T06:14:28.721Z",
+      "lastFailure": "2026-08-28T20:37:25.535Z",
+      "consecutiveFailures": 0,
+      "lastJobCount": 3,
+      "status": "success",
+      "error": null
     },
     "Ameelio": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
-      "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 1,
-      "lastJobCount": 0,
-      "status": "failed",
-      "error": "fetch failed"
+      "lastAttempt": "2026-08-31T06:14:28.721Z",
+      "lastSuccess": "2026-08-31T06:14:28.721Z",
+      "lastFailure": "2026-08-28T20:37:25.535Z",
+      "consecutiveFailures": 0,
+      "lastJobCount": 2,
+      "status": "success",
+      "error": null
     },
     "Forage": {
       "source": "greenhouse",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
-      "lastSuccess": null,
-      "lastFailure": "2026-08-25T21:15:44.203Z",
-      "consecutiveFailures": 1,
+      "lastAttempt": "2026-08-31T06:14:28.721Z",
+      "lastSuccess": "2026-08-28T21:56:13.349Z",
+      "lastFailure": "2026-08-31T06:14:28.721Z",
+      "consecutiveFailures": 2,
       "lastJobCount": 0,
       "status": "failed",
-      "error": "fetch failed"
+      "error": "HTTP 404"
     },
     "Emerge Career": {
       "source": "none",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -892,7 +892,7 @@
     },
     "Redaptive": {
       "source": "none",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
@@ -902,12 +902,142 @@
     },
     "Spoiler Alert": {
       "source": "none",
-      "lastAttempt": "2026-08-25T21:15:44.203Z",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
       "lastSuccess": null,
       "lastFailure": null,
       "consecutiveFailures": 0,
       "lastJobCount": 0,
       "status": "unavailable",
+      "error": null
+    },
+    "Common Impact": {
+      "source": "none",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
+      "lastSuccess": null,
+      "lastFailure": null,
+      "consecutiveFailures": 0,
+      "lastJobCount": 0,
+      "status": "unavailable",
+      "error": null
+    },
+    "TCC Group": {
+      "source": "none",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
+      "lastSuccess": null,
+      "lastFailure": null,
+      "consecutiveFailures": 0,
+      "lastJobCount": 0,
+      "status": "unavailable",
+      "error": null
+    },
+    "Nonprofit Solutions Consulting Group": {
+      "source": "none",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
+      "lastSuccess": null,
+      "lastFailure": null,
+      "consecutiveFailures": 0,
+      "lastJobCount": 0,
+      "status": "unavailable",
+      "error": null
+    },
+    "Spring Impact": {
+      "source": "none",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
+      "lastSuccess": null,
+      "lastFailure": null,
+      "consecutiveFailures": 0,
+      "lastJobCount": 0,
+      "status": "unavailable",
+      "error": null
+    },
+    "EnergyHub": {
+      "source": "none",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
+      "lastSuccess": null,
+      "lastFailure": null,
+      "consecutiveFailures": 0,
+      "lastJobCount": 0,
+      "status": "unavailable",
+      "error": null
+    },
+    "Aurora Solar": {
+      "source": "ashby",
+      "lastAttempt": "2026-08-31T06:14:28.721Z",
+      "lastSuccess": "2026-08-31T06:14:28.721Z",
+      "lastFailure": "2026-08-28T20:37:25.535Z",
+      "consecutiveFailures": 0,
+      "lastJobCount": 9,
+      "status": "success",
+      "error": null
+    },
+    "AidKit": {
+      "source": "none",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
+      "lastSuccess": null,
+      "lastFailure": null,
+      "consecutiveFailures": 0,
+      "lastJobCount": 0,
+      "status": "unavailable",
+      "error": null
+    },
+    "Development Seed": {
+      "source": "greenhouse",
+      "lastAttempt": "2026-08-31T06:14:28.721Z",
+      "lastSuccess": "2026-08-31T06:14:28.721Z",
+      "lastFailure": "2026-08-28T20:37:25.535Z",
+      "consecutiveFailures": 0,
+      "lastJobCount": 1,
+      "status": "success",
+      "error": null
+    },
+    "Rewiring America": {
+      "source": "none",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
+      "lastSuccess": null,
+      "lastFailure": null,
+      "consecutiveFailures": 0,
+      "lastJobCount": 0,
+      "status": "unavailable",
+      "error": null
+    },
+    "WattTime": {
+      "source": "none",
+      "lastAttempt": "2026-08-28T20:38:13.976Z",
+      "lastSuccess": null,
+      "lastFailure": null,
+      "consecutiveFailures": 0,
+      "lastJobCount": 0,
+      "status": "unavailable",
+      "error": null
+    },
+    "Voltus": {
+      "source": "lever",
+      "lastAttempt": "2026-08-31T06:14:28.721Z",
+      "lastSuccess": "2026-08-31T06:14:28.721Z",
+      "lastFailure": "2026-08-28T20:37:25.535Z",
+      "consecutiveFailures": 0,
+      "lastJobCount": 19,
+      "status": "success",
+      "error": null
+    },
+    "GiveDirectly": {
+      "source": "greenhouse",
+      "lastAttempt": "2026-08-31T06:14:28.721Z",
+      "lastSuccess": "2026-08-31T06:14:28.721Z",
+      "lastFailure": "2026-08-28T20:37:25.535Z",
+      "consecutiveFailures": 0,
+      "lastJobCount": 23,
+      "status": "success",
+      "error": null
+    },
+    "Palmetto": {
+      "source": "greenhouse",
+      "lastAttempt": "2026-08-31T06:14:28.721Z",
+      "lastSuccess": "2026-08-31T06:14:28.721Z",
+      "lastFailure": "2026-08-28T20:37:25.535Z",
+      "consecutiveFailures": 0,
+      "lastJobCount": 13,
+      "status": "success",
       "error": null
     }
   }

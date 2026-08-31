@@ -5,7 +5,7 @@ Scans configured job portals, filters by title relevance, applies the v5 rubric,
 > **Note (v1.5+):** The default scanner (`discover.mjs` / `npm run discover`) is **zero-token** and queries Greenhouse, Ashby, and Lever public APIs directly. The Playwright/WebSearch levels described below are the **agent** flow (run by Claude/Codex), not what `discover.mjs` does. If a company has no supported API, the agent reads its official careers page in Level 1. WebSearch also has a prospecting lane for live roles at untracked companies; it must validate the official role page before it can surface a role.
 
 > **Inputs (authoritative — this mode MUST read all of them):**
-> - `portals.yml` — tracked companies, title filters, search queries, seen-ledger config
+> - `portals.yml` — tracked companies, Core/Explore title filters, search queries, seen-ledger config
 > - `config/profile.yml` → `narrative.excluded_sectors` / `excluded_companies` — hard exclusions
 > - `modes/_profile.md` → `## Your Target Roles` / `## Your Values` — user context only
 > - `evals/rubric.md` — the **authoritative scoring rubric** (v5: company fit 1–5 and role match 1–10)
@@ -27,6 +27,27 @@ Agent(
 )
 ```
 
+## Capability-aware execution — required for scheduled runs
+
+This mode is an **agent** workflow. It must run Level 1, Level 2, and Level 3; a zero-token
+CLI scan alone is never a complete role scan because it cannot perform WebSearch prospecting.
+
+1. First try the repo scripts when Bash has outbound network access: `npm run discover` for a
+   daily watchlist scan, or `npm run discover:all` for an explicitly requested full sweep; use
+   `npm run validate-postings -- <url-1> ...` for exact URL validation.
+2. If Bash reports DNS, domain, sandbox, or outbound-network failure, **continue rather than
+   stopping**. Use the agent's real network-capable browser, WebSearch, and official ATS API
+   tools for Levels 1–3 and exact public-detail validation. This is the required path for a
+   restricted scheduled-agent shell; it is not permission to invent results or skip the ledger,
+   title filter, location filter, dedupe, or rubric.
+3. Record the execution path in the summary: `Bash scripts`, `tool-backed fallback`, or `mixed`.
+   State any source that could not be reached. Never claim the CLI scanner or validator ran if
+   it did not.
+
+For a full role scan, the agent must run every enabled `search_queries` entry even if the CLI
+scanner is unavailable. Those queries are the untracked-company lane and are additive to the
+watchlist/API results.
+
 ## Configuration
 
 Read `portals.yml` which contains:
@@ -36,9 +57,17 @@ Read `portals.yml` which contains:
 
 ## Discovery strategy (3 levels)
 
-### Level 1 — Direct Playwright (PRIMARY)
+### Level 1 — Direct Playwright (PRIMARY for non-API sources)
 
-**For each company in the active watchlist:** Navigate to its `careers_url` with Playwright (`browser_navigate` + `browser_snapshot`), read visible job listings, and extract the title + URL of each. Use the rotation/full list only in a weekly run or when discovery is thin. This is the most reliable method because:
+**Respect `scan_method`:** `ats_api` sources are scanned cheaply through their verified
+structured endpoint; `careers_page` sources are navigated with Playwright; `websearch`
+sources use their `scan_query` only as a lead. A scan-query result must still resolve to an
+official careers or job-detail page. Never infer an API from an ATS-looking URL when the record
+has a different `scan_method`.
+
+For daily tracked monitoring, scan every enabled `ats_api` source and a rotating, recorded slice
+of `careers_page` sources. For the longer tracked sweep, navigate every enabled `careers_page`
+source and run every enabled tracked-company `scan_query`. This is the most reliable method because:
 - Sees the page in real time (no Google-cached results)
 - Works with SPAs (Ashby, Lever, Workday)
 - Detects new offers immediately
@@ -73,8 +102,8 @@ LinkedIn, and aggregators are leads only: resolve each lead to the employer's of
 page and exact public job-detail URL before treating it as a candidate.
 
 **Execution priority:**
-1. Level 1: Playwright → all `tracked_companies` with `careers_url`
-2. Level 2: API → all `tracked_companies` with `api:`
+1. Level 1: Playwright → `careers_page` sources (daily rotation or full sweep)
+2. Level 2: API → every enabled `ats_api` source
 3. Level 3: WebSearch → promising roles at untracked companies, then official-page validation
 
 Levels are additive — run all, merge results, then deduplicate.
@@ -89,13 +118,13 @@ Levels are additive — run all, merge results, then deduplicate.
    mark its careers source `needs resolution`, and report it—do not add a guessed URL. Never
    import 🆕 New Targets: moving a card into All Tracked is the user's approval signal.
 2. **Read configuration**: `portals.yml`
-3. **Read the candidate queue**: `data/pipeline.md` → every unprocessed pending URL is an input candidate to score, not a duplicate to discard. Seed the candidate list with these entries before running new discovery.
+3. **Read the candidate queue**: `data/pipeline.md` contains user-supplied or explicitly deferred URLs only. Every unprocessed pending URL is an input candidate to score, not a duplicate to discard. Automated scans do not add unscored roles to this queue.
 4. **Read the dedupe ledger**: `data/seen-postings.jsonl` → use the latest record for each URL (and secondarily company + normalized role). This is the authoritative posting-level dedupe source; apply its re-check windows from `portals.yml`.
 5. **Read evaluated applications**: `data/applications.md` → do not re-evaluate a company + normalized role that has already reached an application decision.
 6. **Read scoring rubric**: `evals/rubric.md`. Use `_profile.md` only for narrative context not already captured by the rubric.
 
-7. **Level 1 — Playwright scan** (sequential):
-   For each enabled active-watchlist company with a defined `careers_url`:
+7. **Level 1 — careers-page scan** (sequential):
+   For each selected enabled `careers_page` company with a defined `careers_url`:
    a. `browser_navigate` to `careers_url`
    b. `browser_snapshot` to read all job listings
    c. If the page has department filters, navigate relevant sections
@@ -107,8 +136,7 @@ Levels are additive — run all, merge results, then deduplicate.
       to enumerate roles.
 
 8. **Level 2 — ATS APIs / feeds** (parallel):
-   For each company in `tracked_companies` with a configured API or recognized official
-   ATS board, and `enabled: true`:
+   For each enabled `ats_api` company in `tracked_companies`:
    a. WebFetch the API/feed URL
    b. If `api_provider` is defined, use its parser; otherwise infer from domain
    c. For **Ashby**, send POST with:
@@ -120,7 +148,12 @@ Levels are additive — run all, merge results, then deduplicate.
    f. Extract and normalize: `{title, detail_url, company, official_careers_url}`
    g. Accumulate in candidate list (dedup with Level 1)
 
-9. **Level 3 — WebSearch prospecting** (parallel where possible):
+9. **Level 3 — WebSearch** (parallel where possible):
+   First run every selected tracked-company `scan_query` for enabled `websearch` sources.
+   Then run the broader untracked-company queries below. In both cases, generic Operations,
+   Partnerships, RevOps, and BizOps titles fail the title filter unless they also contain an
+   approved technical/client-delivery role term.
+
    For each query in `search_queries` with `enabled: true`:
    a. Run WebSearch with the defined `query`.
    b. Extract a prospective role, company, and the exact official job-detail URL. Resolve the
@@ -132,10 +165,11 @@ Levels are additive — run all, merge results, then deduplicate.
       rubric scoring as tracked-company roles. The company is still untracked: do not add it to
       `portals.yml` or move its Company Targets card to All Tracked.
 
-10. **Filter by title** using `title_filter` from `portals.yml`:
-   - At least 1 `positive` keyword must appear in the title (case-insensitive)
-   - 0 `negative` keywords must appear
-   - `seniority_boost` keywords raise priority but are not required
+10. **Cheap title and level filter** using `title_filter` from `portals.yml`:
+   - At least 1 `core` or `explore` keyword (or legacy `positive` keyword) must appear in the title (case-insensitive).
+   - A Core title is a direct role-shape hypothesis; an Explore title is intentionally broader and must earn its way through the JD pass. Neither is carded solely on title.
+   - 0 `negative` keywords may appear. This removes Staff, Principal, Director, Head, VP, and other clearly out-of-level titles before JD work.
+   - `Senior` and `Lead` are not rejected here; the JD pass checks individual-contributor scope and stated experience.
 
 11. **Deduplicate and merge candidates**:
    - `seen-postings.jsonl` is authoritative. Skip `carded` URLs always; skip `closed` and `rejected-guardrail` URLs only while within their configured re-check window; skip `dedup` URLs while the matching board record remains present.
@@ -178,7 +212,7 @@ Levels are additive — run all, merge results, then deduplicate.
          - **culture_evidence**: employee-review rating if readily available, plus review volume, review recency, and recurring themes about leadership, workload, and psychological safety. Record the source(s) and whether the evidence is positive, negative, or insufficient.
          - **glassdoor_rating**: company rating if readily available; blank if unavailable. It is supporting context, not a gate by itself.
 
-    b. **Score using `evals/rubric.md` v5 (the sole scoring specification):** produce
+    b. **Score using `evals/rubric.md` v5 (the sole scoring specification):** use the matched Core/Explore group as an explicit starting hypothesis, then let JD evidence determine the result. In particular, compare stated requirements with `cv.md` and `article-digest.md`, distinguish credible transferable experience from genuine hard gaps, and reject roles requiring 7+ years or management scope. Produce
        `company_fit` (1–5), company disposition and rationale, plus `match_score` (1–10),
        role rationale, and a `fit_summary`: one plain-English sentence explaining why this
        role earned its score and naming its main caveat. The `fit_summary` is required in

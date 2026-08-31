@@ -1,10 +1,14 @@
 # Portal Scanner Configuration
 # Used by /career-ops role-scan to discover new offers automatically.
 #
-# Strategy (3 levels):
-#   1. Playwright → careers_url of each company (real-time, reliable)
-#   2. Greenhouse API → structured JSON (fast, Greenhouse-only)
-#   3. WebSearch with site: filters (broad discovery, may be stale)
+# Strategy (three explicit source types):
+#   1. ats_api → cheap structured daily scan (Greenhouse, Ashby, Lever)
+#   2. careers_page → browser scan; use on a rotation or when API coverage is thin
+#   3. websearch → targeted search; use the record's scan_query as a lead, then validate
+#                  the employer's official careers or job-detail page before surfacing
+#
+# `scan_method` is policy, not a label. A company marked `websearch` or
+# `careers_page` must never have an API inferred from an ATS-looking URL.
 #
 # IMPORTANT: Each company in tracked_companies MUST have careers_url.
 #   Prefer the BRANDED company careers URL whenever available; use ATS-hosted URL only as fallback.
@@ -17,7 +21,7 @@
 #   1. Copy this file to portals.yml in the project root
 #   2. Edit title_filter.positive with YOUR target role keywords
 #   3. Add/remove companies in tracked_companies
-#   4. Adjust search_queries for your preferred job boards
+#   4. Adjust search_queries for your preferred job boards and role lanes
 #   5. Set enabled: false on companies you don't care about
 
 # -- Title filter --
@@ -101,8 +105,9 @@ title_filter:
     - "Director"
 
 # -- Search queries --
-# Each query triggers a WebSearch. Use site: to filter by portal.
-# The scanner extracts title, URL, and company from results.
+# Each query triggers a WebSearch. Keep one role lane per query, with explicit
+# parentheses around OR groups. Search results are leads only: resolve every role to
+# its official public job-detail page, validate it, then score it before carding.
 
 search_queries:
   # -- Ashby --
@@ -279,9 +284,10 @@ search_queries:
     enabled: true
 
 # -- Tracked companies --
-# Companies whose career pages are checked directly.
-# scan_method: playwright (default), websearch, greenhouse_api
-# For Greenhouse companies, add api: field for faster structured JSON access.
+# Companies whose job sources are checked directly.
+# scan_method: ats_api, careers_page, or websearch. Use `ats_api` only after the
+# endpoint has been verified. For Greenhouse, Ashby, or Lever, add `api:` when the
+# exact endpoint is known; otherwise the scanner can infer it from the ATS URL.
 
 tracked_companies:
 
@@ -290,6 +296,7 @@ tracked_companies:
   - name: Anthropic
     careers_url: https://job-boards.greenhouse.io/anthropic
     api: https://boards-api.greenhouse.io/v1/boards/anthropic/jobs
+    scan_method: ats_api
     enabled: true
 
   - name: OpenAI

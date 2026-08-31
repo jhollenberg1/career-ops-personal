@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * merge-tracker.mjs — Merge batch tracker additions into applications.md
+ * merge-tracker.mjs — Merge pending tracker additions into applications.md
  *
  * Handles multiple TSV formats:
  * - 9-col: num\tdate\tcompany\trole\tstatus\tscore\tpdf\treport\tnotes
@@ -24,7 +24,7 @@ const CAREER_OPS = dirname(fileURLToPath(import.meta.url));
 const APPS_FILE = existsSync(join(CAREER_OPS, 'data/applications.md'))
   ? join(CAREER_OPS, 'data/applications.md')
   : join(CAREER_OPS, 'applications.md');
-const ADDITIONS_DIR = join(CAREER_OPS, 'batch/tracker-additions');
+const ADDITIONS_DIR = join(CAREER_OPS, 'data/tracker-additions');
 const MERGED_DIR = join(ADDITIONS_DIR, 'merged');
 const DRY_RUN = process.argv.includes('--dry-run');
 const VERIFY = process.argv.includes('--verify');

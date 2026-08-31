@@ -61,6 +61,8 @@ Start from the strongest applicable lane, then apply attainability, relationship
 | TPM / Technical Project or Program Management | 7 | Raise when scope is stakeholder-heavy and requirements are attainable. |
 | Sales Engineer / consultative pre-sales | 7 | Keep if discovery and technical credibility matter; dock for a hard sales-history requirement or quota pressure. |
 | FDE / Deployment | 7 | Core lane alongside implementation and solutions work. Raise for client deployment and broad problem-solving; lower for heavy systems design, travel, on-call, or startup intensity. |
+| Data strategy / Data strategist | 7 | Keep when the work turns data into stakeholder or customer decisions, adoption, or implementation. Lower for reporting-only, internal analytics, or a deep-specialist requirement without a credible bridge. |
+| Technical product / Data product | 6 | Raise for hands-on technical delivery, data integrations, and strong cross-functional ownership. Lower for product-leadership scope, a pure PM background requirement, or weak technical proximity. |
 | Mission-aligned consulting | 6 | Raise only with credible hours/staffing and junior-to-mid scope. |
 | Data / software engineering | 5 | Raise only for a compelling, understandable product plus integration, customer, or real-world problem work. Deep infrastructure, SRE, systems design, or on-call-heavy work caps at 6. |
 | RevOps / GTM Ops / partnerships / BizOps | 4 | Adjacent but weakly attainable; do not surface without an unusually direct bridge. |

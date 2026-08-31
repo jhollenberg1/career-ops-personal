@@ -6,16 +6,21 @@ Moving a New Targets card to **📚 All Tracked** is Joshua's explicit approval 
 company; `role-scan.md` owns importing approved cards into `portals.yml`.
 
 ## Inputs
-- `portals.yml` → `discovery` (`stages_in_scope`, `funding_sources`, `discovery_queries`),
+- `portals.yml` → `discovery` (`stages_in_scope`, `funding_sources`, `discovery_queries`,
+  and the company ledger path),
   `priority_policy`, and `tracked_companies` (dedupe only). Do not hardcode a different list.
 - `config/profile.yml` → `narrative.target_sectors`, `narrative.excluded_sectors`, `narrative.excluded_companies`.
 - `evals/rubric.md` → the authoritative company-fit rubric (1–5).
+- `data/seen-companies.jsonl` → the company-level status ledger. Each record is
+  `{name, domain, status}`; latest normalized company/domain record wins.
 - The **Company Targets** Trello board (see `modes/populate-company-trello.md`) → dedupe
-  against cards already in 🆕 New Targets and 📚 All Tracked.
+  against cards already in 🆕 New Targets, 📚 All Tracked, and 🚫 Rejected / Do Not Track.
 
 ## 1. Find candidate companies (cast wide — all sizes/stages)
-Run `discovery.discovery_queries` plus your own variations via WebSearch, and skim
-`aggregator_sources`, to find employers HIRING or newly funded in the target sectors. Include
+Run every configured discovery lane plus targeted variations via WebSearch: funding/news,
+conference sponsor and exhibitor lists, VC and accelerator portfolios, mission-company registries,
+industry associations, consulting networks, and `aggregator_sources`. Find employers HIRING or
+newly funded in the target sectors, as well as purpose-led commercial companies. Include
 every stage in `discovery.stages_in_scope`: newly-funded Series A–C startups AND established/large
 companies, nonprofits, public-benefit corps, government-services firms. Aim for ~15–25 raw
 candidates, weighted toward `priority_policy.high_priority_sectors`. Good signals: a recent funding
@@ -26,12 +31,15 @@ RevOps/Strategy&Ops/Partnerships roles; mission language matching `profile.yml` 
 - **Sector fit:** clearly in a target sector (HIGH or LOW priority both qualify; bias new adds toward HIGH-priority).
 - **Exclusions:** NOT in `narrative.excluded_companies` and NOT in an `excluded_sectors` category (defense, military, mass surveillance, primarily DoD/IC revenue). When in doubt, exclude.
 - **Location plausibility:** hires in NYC or hires remote (US). Skip strictly single-location-elsewhere with no remote.
-- **Role plausibility:** plausibly hires 2–4yr client-facing/technical or ops/GTM roles.
-- **Not already tracked or queued:** not already in `tracked_companies` or on either Company
-  Targets list (case-insensitive normalized-name match).
+- **Role plausibility:** plausibly hires 2–6yr client-facing technical, data strategy, product, consulting, or engineering roles. Do not prioritize generic Ops, GTM, partnerships, or BizOps.
+- **Novelty and rejection check:** prioritize companies absent from the ledger and all Company
+  Targets lists. Skip `rejected` companies without researching or recarding them, unless Joshua
+  explicitly moves them out of 🚫 Rejected / Do Not Track.
 
 Score every remaining candidate's `company_fit` using `evals/rubric.md`. Create or update a New
 Targets card only for `company_fit` 4–5. Do not card hard exclusions or companies scoring 1–3.
+Append each resolution to `data/seen-companies.jsonl` using only `{name, domain, status}`:
+`new_target`, `tracked`, or `rejected`.
 
 ## 3. Resolve each kept company's careers source (best effort — does not gate the card)
 Find the live careers page / ATS board and record the provider so the sweep can fetch it:

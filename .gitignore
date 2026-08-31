@@ -9,12 +9,7 @@ reports/*.md
 !reports/.gitkeep
 output/*
 !output/.gitkeep
-batch/logs/*
-!batch/logs/.gitkeep
-batch/batch-state.tsv
-batch/batch-input.tsv
-batch/tracker-additions/**/*.tsv
-!batch/tracker-additions/.gitkeep
+data/tracker-additions/**/*.tsv
 jds/*
 !jds/.gitkeep
 
@@ -22,7 +17,7 @@ jds/*
 writing-samples/*
 !writing-samples/README.md
 
-# User config and customization (never auto-updated)
+# User config and customization
 config/profile.yml
 portals.yml
 modes/_profile.md
@@ -31,10 +26,8 @@ evals/report.md
 resume/*
 .claude/settings.json
 portals.yml.bak
-.update-dismissed
-.update-lock
 
-# Secrets (never commit — use .env.example as template)
+# Secrets (never commit)
 .env
 
 # Generated
@@ -50,5 +43,4 @@ bun.lock
 # Claude Code local
 .claude/settings.local.json
 .claude/memory/
-career-dashboard
 package-lock.json

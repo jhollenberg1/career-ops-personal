@@ -8,10 +8,14 @@
  */
 import { PostingVerifier } from './scanner/verify.mjs';
 
-export async function validatePostings(urls) {
-  const verifier = new PostingVerifier();
+export async function validatePostings(urls, { createVerifier = () => new PostingVerifier() } = {}) {
+  const verifier = createVerifier();
   try {
-    return await Promise.all(urls.map(async url => ({ url, ...(await verifier.verify(url)) })));
+    // PostingVerifier owns one Playwright page. Navigate it serially so one posting's
+    // redirect or body cannot be read as another posting's result.
+    const results = [];
+    for (const url of urls) results.push({ url, ...(await verifier.verify(url)) });
+    return results;
   } finally {
     await verifier.close();
   }

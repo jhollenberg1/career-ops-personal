@@ -14,7 +14,13 @@ const HEALTH_PATH = 'data/source-health.json';
 
 function parseArgs(args) {
   const index = args.indexOf('--company');
-  return { dryRun: args.includes('--dry-run'), full: args.includes('--all') || args.includes('--full'), company: index >= 0 ? args[index + 1] : undefined, verify: !args.includes('--no-verify') };
+  return {
+    dryRun: args.includes('--dry-run'),
+    full: args.includes('--all') || args.includes('--full'),
+    company: index >= 0 ? args[index + 1] : undefined,
+    verify: !args.includes('--no-verify'),
+    queue: !args.includes('--no-queue'),
+  };
 }
 
 function loadQueuedUrls() {
@@ -45,14 +51,17 @@ function updateHealth(results, startedAt) {
   const previous = existsSync(HEALTH_PATH) ? JSON.parse(readFileSync(HEALTH_PATH, 'utf8')) : { sources: {} };
   for (const result of results) {
     const prior = previous.sources[result.company] || {};
+    const networkFailure = result.status === 'failed' && result.failureKind === 'network';
     previous.sources[result.company] = {
       source: result.source,
       lastAttempt: startedAt,
       lastSuccess: result.status === 'success' ? startedAt : prior.lastSuccess || null,
-      lastFailure: result.status === 'failed' ? startedAt : prior.lastFailure || null,
-      consecutiveFailures: result.status === 'failed' ? (prior.consecutiveFailures || 0) + 1 : 0,
+      // A sandbox or DNS outage says nothing about a company's endpoint. Preserve
+      // source health so a transient host failure cannot retire a good integration.
+      lastFailure: result.status === 'failed' && !networkFailure ? startedAt : prior.lastFailure || null,
+      consecutiveFailures: result.status === 'failed' && !networkFailure ? (prior.consecutiveFailures || 0) + 1 : result.status === 'success' ? 0 : prior.consecutiveFailures || 0,
       lastJobCount: result.postings.length,
-      status: result.status,
+      status: networkFailure ? 'network_unavailable' : result.status,
       error: result.error || null,
     };
   }
@@ -69,7 +78,7 @@ export async function runScan(options = {}) {
     scope: options.full ? 'full' : 'watchlist',
     companies: [],
     candidates: [],
-    counts: { companiesAttempted: companies.length, sourcesSucceeded: 0, sourcesFailed: 0, sourcesUnavailable: 0, discovered: 0, filtered: 0, suppressed: 0, verifiedOpen: 0, verificationFailed: 0, queued: 0 },
+    counts: { companiesAttempted: companies.length, sourcesSucceeded: 0, sourcesFailed: 0, sourcesNetworkUnavailable: 0, sourcesDeferred: 0, sourcesUnavailable: 0, discovered: 0, filtered: 0, suppressed: 0, verifiedOpen: 0, verificationFailed: 0, queued: 0 },
     complete: true,
   };
   const results = await Promise.all(companies.map(company => fetchAts(company)));
@@ -82,7 +91,12 @@ export async function runScan(options = {}) {
   for (const result of results) {
     report.companies.push({ company: result.company, source: result.source, status: result.status, error: result.error || null, discovered: result.postings.length });
     if (result.status === 'success') report.counts.sourcesSucceeded++;
-    if (result.status === 'failed') { report.counts.sourcesFailed++; report.complete = false; }
+    if (result.status === 'failed') {
+      if (result.failureKind === 'network') report.counts.sourcesNetworkUnavailable++;
+      else report.counts.sourcesFailed++;
+      report.complete = false;
+    }
+    if (result.status === 'deferred') { report.counts.sourcesDeferred++; report.complete = false; }
     if (result.status === 'unavailable') { report.counts.sourcesUnavailable++; report.complete = false; }
     for (const raw of result.postings) {
       const posting = normalizePosting(raw);
@@ -112,11 +126,13 @@ export async function runScan(options = {}) {
   }
   await verifier?.close();
 
-  report.counts.queued = queue.length;
+  report.counts.queued = options.queue === false ? 0 : queue.length;
   report.finishedAt = new Date().toISOString();
   if (!options.dryRun) {
-    appendQueue(queue);
-    appendHistory(queue);
+    if (options.queue !== false) {
+      appendQueue(queue);
+      appendHistory(queue);
+    }
     updateHealth(results, startedAt);
     report.reportPath = writeScanReport(report);
   }

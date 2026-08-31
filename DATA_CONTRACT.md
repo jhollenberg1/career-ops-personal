@@ -1,10 +1,10 @@
 # Data Contract
 
-This document defines which files belong to the **system** (auto-updatable) and which belong to the **user** (never touched by updates).
+This document separates Joshua's personal search data from reusable workflow logic.
 
-## User Layer (NEVER auto-updated)
+## User Layer (personal data)
 
-These files contain your personal data, customizations, and work product. Updates will NEVER modify them.
+These files contain your personal data, customizations, and work product.
 
 | File | Purpose |
 |------|---------|
@@ -27,9 +27,9 @@ These files contain your personal data, customizations, and work product. Update
 | `output/*` | Your generated PDFs |
 | `jds/*` | Your saved job descriptions |
 
-## System Layer (safe to auto-update)
+## Workflow Layer
 
-These files contain system logic, scripts, templates, and instructions that improve with each release.
+These files contain the local workflow logic, scripts, templates, and instructions.
 
 | File | Purpose |
 |------|---------|
@@ -39,7 +39,6 @@ These files contain system logic, scripts, templates, and instructions that impr
 | `modes/role-scan.md` | Portal scanner instructions |
 | `evals/rubric.md` | Scan match-score policy |
 | `evals/score.py` | Deterministic rubric-evaluation scorer |
-| `modes/batch.md` | Batch processing instructions |
 | `modes/apply.md` | Application assistant instructions |
 | `modes/auto-pipeline.md` | Auto-pipeline instructions |
 | `modes/contacto.md` | LinkedIn outreach instructions |
@@ -51,26 +50,14 @@ These files contain system logic, scripts, templates, and instructions that impr
 | `modes/training.md` | Training evaluation instructions |
 | `modes/patterns.md` | Pattern analysis instructions |
 | `modes/followup.md` | Follow-up cadence instructions |
-| `modes/de/*` | German language modes |
-| `modes/fr/*` | French language modes |
-| `modes/ja/*` | Japanese language modes |
-| `modes/pt/*` | Portuguese language modes |
-| `modes/ru/*` | Russian language modes |
 | `CLAUDE.md` | Agent instructions |
 | `AGENTS.md` | Codex instructions |
 | `*.mjs` | Utility scripts |
-| `batch/batch-prompt.md` | Batch worker prompt |
-| `batch/batch-runner.sh` | Batch orchestrator |
-| `dashboard/*` | Go TUI dashboard |
 | `templates/*` | Base templates |
 | `fonts/*` | Self-hosted fonts |
 | `.claude/skills/*` | Skill definitions |
-| `docs/*` | Documentation |
-| `VERSION` | Current version number |
 | `DATA_CONTRACT.md` | This file |
 
 ## The Rule
 
-**If a file is in the User Layer, no update process may read, modify, or delete it.**
-
-**If a file is in the System Layer, it can be safely replaced with the latest version from the upstream repo.**
+**Do not overwrite a User Layer file during workflow changes.**

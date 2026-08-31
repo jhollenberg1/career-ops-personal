@@ -98,6 +98,7 @@ After detecting archetype, read `modes/_profile.md` for the user's specific fram
 6. Generate a PDF without reading the JD first
 7. Use corporate-speak
 8. Ignore the tracker (every evaluated offer gets registered)
+9. Reimplement a repo script's logic by hand when that script is runnable. **Role-scan is the explicit exception:** follow its capability-aware discovery and validation procedure when a scheduled agent's Bash environment has no outbound network; use the actual browser/WebSearch/API tools, preserve the mode's ledger and dedupe rules, and state which execution path was used. Do not claim that a Bash script ran when it did not.
 
 ### ALWAYS
 
@@ -112,7 +113,7 @@ After detecting archetype, read `modes/_profile.md` for the user's specific fram
 7. Be direct and actionable -- no fluff
 8. Native tech English for generated text. Short sentences, action verbs, no passive voice.
 8b. Case study URLs in PDF Professional Summary (recruiter may only read this).
-9. **Tracker additions as TSV** -- NEVER edit applications.md directly. Write TSV in `batch/tracker-additions/`.
+9. **Tracker additions as TSV** -- NEVER edit applications.md directly. Write TSV in `data/tracker-additions/`.
 10. **Include `**URL:**` in every report header.**
 
 ### Tools

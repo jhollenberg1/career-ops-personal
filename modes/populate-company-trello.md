@@ -5,13 +5,15 @@ from the Job Applications board: discovering a company never implies discovering
 
 ## Target
 
-Create only these lists, in order: `🆕 New Targets`, `📚 All Tracked`, and `🗄️ Archived`.
+Maintain these lists: `🆕 New Targets`, `📚 All Tracked`, `🚫 Rejected / Do Not Track`, and `🗄️ Archived`.
 
 - **New Targets** contains companies scoring `company_fit` 4–5, found by company discovery or
   role-scan prospecting, that Joshua has not approved for monitoring.
 - **All Tracked** contains companies Joshua has manually approved by moving their cards from
   New Targets. `role-scan.md` imports any missing card into `portals.yml` on its next run.
-- **Archived** contains excluded, invalid, or intentionally stopped targets.
+- **Rejected / Do Not Track** contains companies Joshua does not want rediscovered. It is a
+  durable negative signal and is mirrored in `data/seen-companies.jsonl` as `rejected`.
+- **Archived** is historical storage for former targets; it is not a rejection signal.
 
 Use labels for `Priority 5`, `Priority 4`, `Networking`, and source-health issues instead
 of more lists. This keeps the board digestible without hiding tracked companies.
@@ -27,6 +29,10 @@ and networking status with labels/fields.
 For every synced card, upsert the machine-owned `About`, `Careers`, and `Tracking` lines
 from that company’s `notes`, `careers_url`, and `enabled` fields. Preserve any text below
 `User notes:` exactly as written.
+
+At the beginning of each company-discovery or role-scan-prospecting handoff, read the rejected
+list and synchronize each card's normalized name/domain to `data/seen-companies.jsonl` with
+`status: "rejected"`. Never edit, move, or recreate a rejected card.
 
 For each company-discovery or role-scan-prospecting handoff, create or update a **New Targets**
 card whenever `company_fit` is 4–5 — whether or not its careers page could be confirmed. Set
@@ -51,7 +57,10 @@ after every scan; do not overwrite a manually entered networking note.
 
 ## Dedup
 
-Before creating a card, search this board for the normalized company name. Update an existing card's assessment but preserve human-written networking notes, contacts, last-outreach date, and manually advanced list position.
+Before creating a card, search this board and `data/seen-companies.jsonl` for the normalized
+company name/domain. Skip a `rejected` company. Update an existing New Targets or All Tracked
+card's assessment but preserve human-written networking notes, contacts, last-outreach date, and
+manually advanced list position.
 
 ## Card fields
 
@@ -72,6 +81,7 @@ Use a green label for 5 and yellow label for 4 if available.
 ## Guardrails
 
 - Never create a Company Targets card for a hard exclusion or `company_fit` below 4.
+- Never create, update, or move a card in 🚫 Rejected / Do Not Track. Joshua alone reverses a rejection.
 - Never use a weak current role to downgrade a 4–5 company fit; record it as a current-role signal instead.
 - Never withhold a New Targets card for `company_fit` 4–5 because the careers page is unresolved —
   card it as `needs resolution` instead. (A validated role from role-scan prospecting still needs a

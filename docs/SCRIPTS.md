@@ -12,12 +12,9 @@ those internals directly.
 | `npm run verify` | `verify-pipeline.mjs` | Check pipeline data integrity |
 | `npm run normalize` | `normalize-statuses.mjs` | Fix non-canonical statuses |
 | `npm run dedup` | `dedup-tracker.mjs` | Remove duplicate tracker entries |
-| `npm run merge` | `merge-tracker.mjs` | Merge batch TSVs into applications.md |
+| `npm run merge` | `merge-tracker.mjs` | Merge pending TSVs into applications.md |
 | `npm run pdf` | `generate-pdf.mjs` | Convert HTML to ATS-optimized PDF |
 | `npm run sync-check` | `cv-sync-check.mjs` | Validate CV/profile consistency |
-| `npm run update:check` | `update-system.mjs check` | Check for upstream updates |
-| `npm run update` | `update-system.mjs apply` | Apply upstream update |
-| `npm run rollback` | `update-system.mjs rollback` | Rollback last update |
 | `npm run liveness` | `check-liveness.mjs` | Test if job URLs are still active |
 | `npm run discover` | `scanner/scan.mjs` | Scan the active watchlist |
 | `npm run discover:all` | `scanner/scan.mjs --all` | Run the broader weekly scan |
@@ -41,7 +38,7 @@ npm run doctor
 
 ## verify
 
-Health check for pipeline data integrity. Validates `data/applications.md` against seven rules: canonical statuses (per `templates/states.yml`), no duplicate company+role pairs, all report links point to existing files, scores match `X.XX/5` / `N/A` / `DUP`, rows have proper pipe-delimited format, no pending TSVs in `batch/tracker-additions/`, and no markdown bold in scores.
+Health check for pipeline data integrity. Validates `data/applications.md` against seven rules: canonical statuses (per `templates/states.yml`), no duplicate company+role pairs, all report links point to existing files, scores match `X.XX/5` / `N/A` / `DUP`, rows have proper pipe-delimited format, no pending TSVs in `data/tracker-additions/`, and no markdown bold in scores.
 
 ```bash
 npm run verify
@@ -83,7 +80,7 @@ Creates a `.bak` backup before writing.
 
 ## merge
 
-Merges batch tracker additions (`batch/tracker-additions/*.tsv`) into `applications.md`. Handles 9-column TSV, 8-column TSV, and pipe-delimited markdown formats. Detects duplicates by report number, entry number, and company+role fuzzy match. Higher-scored re-evaluations update existing entries in place.
+Merges pending tracker additions (`data/tracker-additions/*.tsv`) into `applications.md`. Handles 9-column TSV, 8-column TSV, and pipe-delimited markdown formats. Detects duplicates by report number, entry number, and company+role fuzzy match. Higher-scored re-evaluations update existing entries in place.
 
 ```bash
 npm run merge                 # apply merge
@@ -91,7 +88,7 @@ npm run merge -- --dry-run    # preview without writing
 npm run merge -- --verify     # merge then run verify-pipeline
 ```
 
-Processed TSVs are moved to `batch/tracker-additions/merged/`.
+Processed TSVs are moved to `data/tracker-additions/merged/`.
 
 **Exit codes:** `0` success, `1` verification errors (with `--verify`).
 
@@ -113,58 +110,13 @@ npm run pdf -- input.html output.pdf --format=a4        # A4 (default)
 
 ## sync-check
 
-Validates that the career-ops setup is internally consistent: `cv.md` exists and is not too short, `config/profile.yml` exists with required fields, no hardcoded metrics in `modes/_shared.md` or `batch/batch-prompt.md`, and `article-digest.md` freshness (warns if older than 30 days).
+Validates that the career-ops setup is internally consistent: `cv.md` exists and is not too short, `config/profile.yml` exists with required fields, no hardcoded metrics in `modes/_shared.md`, and `article-digest.md` freshness (warns if older than 30 days).
 
 ```bash
 npm run sync-check
 ```
 
 **Exit codes:** `0` no errors (warnings allowed), `1` errors found.
-
----
-
-## update:check
-
-Checks whether a newer version of career-ops is available upstream. Outputs JSON to stdout:
-
-```bash
-npm run update:check
-```
-
-Possible JSON responses:
-
-| `status` | Meaning |
-|----------|---------|
-| `up-to-date` | Local version matches remote |
-| `update-available` | Newer version exists (includes `local`, `remote`, `changelog`) |
-| `dismissed` | User dismissed the update prompt |
-| `offline` | Could not reach GitHub |
-
-**Exit codes:** `0` always.
-
----
-
-## update
-
-Applies the upstream update. Creates a backup branch (`backup-pre-update-{version}`), fetches from the canonical repo, checks out only system-layer files, runs `npm install`, and commits. User-layer files (`cv.md`, `config/profile.yml`, `data/`, etc.) are never touched.
-
-```bash
-npm run update
-```
-
-**Exit codes:** `0` success, `1` lock conflict or safety violation.
-
----
-
-## rollback
-
-Restores system-layer files from the most recent backup branch created during an update.
-
-```bash
-npm run rollback
-```
-
-**Exit codes:** `0` success, `1` no backup branch found or git error.
 
 ---
 

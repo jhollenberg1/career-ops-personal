@@ -15,6 +15,8 @@ export function printSummary(report) {
   console.log(`Companies attempted: ${counts.companiesAttempted}`);
   console.log(`Sources succeeded:   ${counts.sourcesSucceeded}`);
   console.log(`Sources failed:      ${counts.sourcesFailed}`);
+  console.log(`Network unavailable: ${counts.sourcesNetworkUnavailable}`);
+  console.log(`Deferred to agent:   ${counts.sourcesDeferred}`);
   console.log(`No compatible source:${counts.sourcesUnavailable}`);
   console.log(`Jobs discovered:     ${counts.discovered}`);
   console.log(`Filtered:            ${counts.filtered}`);

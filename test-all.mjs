@@ -4,11 +4,10 @@
  * test-all.mjs — Comprehensive test suite for career-ops
  *
  * Run before merging any PR or pushing changes.
- * Tests: syntax, scripts, dashboard, data contract, personal data, paths.
+ * Tests: syntax, scripts, data contract, personal data, paths.
  *
  * Usage:
  *   node test-all.mjs           # Run all tests
- *   node test-all.mjs --quick   # Skip dashboard build (faster)
  */
 
 import { execSync, execFileSync } from 'child_process';
@@ -18,8 +17,6 @@ import { fileURLToPath, pathToFileURL } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = __dirname;
-const QUICK = process.argv.includes('--quick');
-
 let passed = 0;
 let failed = 0;
 let warnings = 0;
@@ -68,8 +65,8 @@ const scripts = [
   { name: 'normalize-statuses.mjs', expectExit: 0 },
   { name: 'dedup-tracker.mjs', expectExit: 0 },
   { name: 'merge-tracker.mjs', expectExit: 0 },
-  { name: 'update-system.mjs check', expectExit: 0 },
   { name: 'scanner/test/core.test.mjs', expectExit: 0 },
+  { name: 'scanner/test/validate-postings.test.mjs', expectExit: 0 },
   { name: '--check scanner/scan.mjs', expectExit: 0 },
   { name: '--check scanner/report.mjs', expectExit: 0 },
   { name: '--check scanner/verify.mjs', expectExit: 0 },
@@ -141,27 +138,13 @@ try {
   fail(`Liveness classification tests crashed: ${e.message}`);
 }
 
-// ── 4. DASHBOARD BUILD ──────────────────────────────────────────
+// ── 4. DATA CONTRACT ────────────────────────────────────────────
 
-if (!QUICK) {
-  console.log('\n4. Dashboard build');
-  const goBuild = run('cd dashboard && go build -o /tmp/career-dashboard-test . 2>&1');
-  if (goBuild !== null) {
-    pass('Dashboard compiles');
-  } else {
-    fail('Dashboard build failed');
-  }
-} else {
-  console.log('\n4. Dashboard build (skipped --quick)');
-}
-
-// ── 5. DATA CONTRACT ────────────────────────────────────────────
-
-console.log('\n5. Data contract validation');
+console.log('\n4. Data contract validation');
 
 // Check system files exist
 const systemFiles = [
-  'CLAUDE.md', 'VERSION', 'DATA_CONTRACT.md',
+  'CLAUDE.md', 'DATA_CONTRACT.md',
   'modes/_shared.md', 'modes/_profile.template.md',
   'modes/oferta.md', 'modes/pdf.md', 'modes/role-scan.md',
   'templates/states.yml', 'templates/cv-template.html',
@@ -191,9 +174,9 @@ for (const f of userFiles) {
   }
 }
 
-// ── 6. PERSONAL DATA LEAK CHECK ─────────────────────────────────
+// ── 5. PERSONAL DATA LEAK CHECK ─────────────────────────────────
 
-console.log('\n6. Personal data leak check');
+console.log('\n5. Personal data leak check');
 
 const leakPatterns = [
   'Santiago', 'santifer.io', 'Santifer iRepair', 'Zinkee', 'ALMAS',
@@ -211,8 +194,6 @@ const allowedFiles = [
   // Community / governance files (added in v1.3.0, all legitimately reference the maintainer)
   'CODE_OF_CONDUCT.md', 'GOVERNANCE.md', 'SECURITY.md', 'SUPPORT.md',
   '.github/SECURITY.md',
-  // Dashboard credit string
-  'dashboard/internal/ui/screens/pipeline.go',
 ];
 
 // Build pathspec for git grep — only scan tracked files matching these
@@ -231,7 +212,6 @@ for (const pattern of leakPatterns) {
     for (const line of result.split('\n')) {
       const file = line.split(':')[0];
       if (allowedFiles.some(a => file.includes(a))) continue;
-      if (file.includes('dashboard/go.mod')) continue;
       warn(`Possible personal data in ${file}: "${pattern}"`);
       leakFound = true;
     }
@@ -241,9 +221,9 @@ if (!leakFound) {
   pass('No personal data leaks outside allowed files');
 }
 
-// ── 7. ABSOLUTE PATH CHECK ──────────────────────────────────────
+// ── 6. ABSOLUTE PATH CHECK ──────────────────────────────────────
 
-console.log('\n7. Absolute path check');
+console.log('\n6. Absolute path check');
 
 // Same git grep approach: only scans tracked files. Untracked AI tool
 // outputs, local debate artifacts, etc. can't false-positive here.
@@ -258,13 +238,13 @@ if (!absPathResult) {
   }
 }
 
-// ── 8. MODE FILE INTEGRITY ──────────────────────────────────────
+// ── 7. MODE FILE INTEGRITY ──────────────────────────────────────
 
-console.log('\n8. Mode file integrity');
+console.log('\n7. Mode file integrity');
 
 const expectedModes = [
   '_shared.md', '_profile.template.md', 'oferta.md', 'pdf.md', 'role-scan.md',
-  'batch.md', 'apply.md', 'auto-pipeline.md', 'contacto.md', 'deep.md',
+  'apply.md', 'auto-pipeline.md', 'contacto.md', 'deep.md',
   'ofertas.md', 'pipeline.md', 'project.md', 'tracker.md', 'training.md',
 ];
 
@@ -284,15 +264,14 @@ if (shared.includes('_profile.md')) {
   fail('_shared.md does NOT reference _profile.md');
 }
 
-// ── 9. AGENTS.md INTEGRITY ──────────────────────────────────────
+// ── 8. AGENTS.md INTEGRITY ──────────────────────────────────────
 
-console.log('\n9. AGENTS.md integrity');
+console.log('\n8. AGENTS.md integrity');
 
 const agents = readFile('AGENTS.md');
 const requiredSections = [
-  'Data Contract', 'Update Check', 'Ethical Use',
-  'Offer Verification', 'Canonical States', 'TSV Format',
-  'First Run', 'Onboarding',
+  'Data boundaries', 'Active architecture', 'Targeting',
+  'Safety and quality', 'Useful commands', 'Mode routing',
 ];
 
 for (const section of requiredSections) {
@@ -301,21 +280,6 @@ for (const section of requiredSections) {
   } else {
     fail(`AGENTS.md missing section: ${section}`);
   }
-}
-
-// ── 10. VERSION FILE ─────────────────────────────────────────────
-
-console.log('\n10. Version file');
-
-if (fileExists('VERSION')) {
-  const version = readFile('VERSION').trim();
-  if (/^\d+\.\d+\.\d+$/.test(version)) {
-    pass(`VERSION is valid semver: ${version}`);
-  } else {
-    fail(`VERSION is not valid semver: "${version}"`);
-  }
-} else {
-  fail('VERSION file missing');
 }
 
 // ── SUMMARY ─────────────────────────────────────────────────────

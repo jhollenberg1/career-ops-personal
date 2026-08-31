@@ -71,7 +71,7 @@ function checkCv() {
     label: 'cv.md not found',
     fix: [
       'Create cv.md in the project root with your CV in markdown',
-      'See examples/ for reference CVs',
+      'Use config/profile.example.yml as a setup reference',
     ],
   };
 }
