@@ -135,6 +135,7 @@ and a strong-looking role can still fail the JD match.
 | Process a role I explicitly added to the queue | `/career-ops pipeline` |
 | Research a company | `/career-ops deep` |
 | Prepare an application form without submitting | `/career-ops apply` |
+| Prepare a role-specific, reviewable resume variant | `/career-ops resume-prep` |
 | See application status | `/career-ops tracker` |
 | Check scanner behavior | `npm run scan:test` |
 
@@ -142,7 +143,9 @@ and a strong-looking role can still fail the JD match.
 
 | File | Purpose |
 |---|---|
-| `cv.md` | Canonical CV. |
+| `cv.md` | General-purpose CV variant. |
+| `resume/bullet-library.md` | Canonical, pre-approved experience evidence for resume tailoring. |
+| `modes/resume-prep.md` | Independent resume screening and grounded rewrite workflow. |
 | `config/profile.yml` | Background, target roles, location, compensation, values, and exclusions. |
 | `portals.yml` | Title categories, tracked companies, search queries, and company-discovery sources. |
 | `evals/rubric.md` | Company and role scoring rules. |
