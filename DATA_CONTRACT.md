@@ -20,7 +20,7 @@ These files contain your personal data, customizations, and work product.
 | `data/seen-postings.jsonl` | Your posting-resolution ledger |
 | `evals/golden-set.csv` | Your labeled classifier examples |
 | `evals/report.md` | Your generated classifier evaluation report |
-| `resume/*` | Your personal resume bullet library |
+| `resume/*` | Your personal resume evidence, bullet library, and resume variants |
 | `data/follow-ups.md` | Your follow-up history |
 | `writing-samples/*` | Your personal writing samples for style calibration |
 | `reports/*` | Your evaluation reports |
@@ -40,6 +40,7 @@ These files contain the local workflow logic, scripts, templates, and instructio
 | `evals/rubric.md` | Scan match-score policy |
 | `evals/score.py` | Deterministic rubric-evaluation scorer |
 | `modes/apply.md` | Application assistant instructions |
+| `modes/resume-prep.md` | Independent resume screening and grounded rewrite instructions |
 | `modes/auto-pipeline.md` | Auto-pipeline instructions |
 | `modes/contacto.md` | LinkedIn outreach instructions |
 | `modes/deep.md` | Research prompt instructions |
