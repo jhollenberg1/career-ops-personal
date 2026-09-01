@@ -82,8 +82,11 @@ Forbidden changes:
 - changing the canonical base resume;
 - treating a hard experience gap as a phrasing problem.
 
-Apply the plan to the copied Google Doc as suggestions only. Joshua reviews,
-accepts, or rejects those suggestions; do not accept them on his behalf.
+Use Google Docs suggestions when the connected runtime exposes suggestion-mode
+writes. If it does not, apply edits only to the dedicated role-specific copy,
+label it `Draft — direct edits`, and state that limitation on the Trello card.
+Joshua reviews the draft or its suggestions; do not alter the selected base
+document or accept suggestions on his behalf.
 
 ## Step 4 — Re-screen and hand off
 
@@ -100,8 +103,8 @@ The card must include:
 - `Review state: Suggested edits awaiting Joshua`.
 
 Move the card to `Ready to Send` only when the revised copy has been screened,
-all edits remain suggestions, and Joshua has the review link. Never submit the
-application.
+the card discloses whether it contains suggestions or direct edits, and Joshua
+has the review link. Never submit the application.
 
 ## Functional-currency rule
 

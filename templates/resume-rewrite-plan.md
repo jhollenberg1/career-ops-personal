@@ -24,6 +24,8 @@ employment_date_conflicts:
 claim_validation: pass | review_required
 ```
 
-Apply only evidence-backed plan items as Google Docs suggestions. Joshua then
-reviews, accepts, or rejects them. Never apply or accept a change that lacks
+Apply only evidence-backed plan items as Google Docs suggestions when the
+runtime supports suggestion-mode writes. Otherwise, apply them only to a
+dedicated draft copy and label that limitation. Joshua then reviews the draft
+or accepts/rejects suggestions. Never apply or accept a change that lacks
 evidence.
