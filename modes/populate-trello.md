@@ -27,7 +27,7 @@ When adding the Backlog list, move every existing card in `🔍 Researching` to
 cards only in Backlog; Joshua manually moves a card to Researching when ready.
 
 ## Dedup (do this FIRST)
-1. Read `data/seen-postings.jsonl`; any posting with `status: "carded"` for this URL → **skip**.
+1. Read `data/seen-postings.jsonl`; any posting with `status: "carded"`, `"rejected-user"`, or `"archived-user"` for this URL → **skip**. The latter two are durable user decisions from the rejected/closed list or archived Trello cards.
 2. Search the board (trelloSearch `search_cards` scoped to this board) for the JD URL or for a
    card named `{Company} — {Role}`. If found on any list, **skip** — do not create a duplicate.
 
@@ -50,8 +50,7 @@ cards only in Backlog; Joshua manually moves a card to Researching when ready.
 ## After carding
 Append one line per carded role to `data/seen-postings.jsonl`:
 `{date_seen, company, role, url, status:"carded", sector, last_checked}` (append only).
-If dual-writing with `modes/populate-notion.md`, both write the same `"carded"` ledger line —
-write it once, after the last board is updated, so re-runs skip the posting everywhere.
+Write the `"carded"` ledger line after the board is updated so re-runs skip the posting.
 
 ## Guardrails
 - Never move or edit a card the human has already advanced past 📥 Backlog.

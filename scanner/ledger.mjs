@@ -17,7 +17,9 @@ export function loadLatestLedger(path = 'data/seen-postings.jsonl') {
 export function isSuppressed(posting, ledger, policy = {}, now = Date.now()) {
   const entry = ledger.get(canonicalUrl(posting.url));
   if (!entry) return false;
-  if (entry.status === 'carded' || entry.status === 'dedup') return true;
+  // A user decision in Trello is durable. Unlike automated low-score or
+  // guardrail results, it must never age back into discovery on its own.
+  if (entry.status === 'carded' || entry.status === 'dedup' || entry.status === 'rejected-user' || entry.status === 'archived-user') return true;
   const checked = Date.parse(entry.last_checked || entry.date_seen || '');
   const age = Number.isFinite(checked) ? (now - checked) / 86_400_000 : Infinity;
   if (entry.status === 'closed') return age < (policy.recheck_days_closed ?? 30);

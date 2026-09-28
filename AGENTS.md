@@ -15,7 +15,8 @@ Put Joshua-specific targets, narrative, location policy, compensation preference
 
 - Daily: scan tracked companies for newly posted roles, validate the JD, score the role, and create a Trello card only when it clears the threshold.
 - Every three days, alternating: broad untracked role discovery; broad company discovery.
-- `data/seen-companies.jsonl` prevents rediscovery. Rejected companies are skipped.
+- `data/seen-companies.jsonl` prevents company rediscovery. Archived and rejected companies are
+  skipped by company discovery; only rejected companies are skipped by untracked role discovery.
 - `data/tracker-additions/` holds pending application-tracker TSVs. Run `node merge-tracker.mjs` after an evaluation creates one.
 
 ## Targeting
@@ -27,6 +28,9 @@ Exclude generic operations, GTM, RevOps, partnerships, business development, sal
 ## Safety and quality
 
 - Never submit an application without Joshua's explicit review and approval.
+- **Google Docs trusted reads:** Never write trusted-read artifacts to this repository. Use a unique
+  directory under `/private/tmp` and remove it when the document task is complete.
+- **Resume-prep gate:** Before any workflow moves a Job Applications card from `To Apply` to `Ready to Send`, it must complete `modes/resume-prep.md`. A bullet-order recommendation alone is insufficient: the card must link the default or explicitly selected base resume, dedicated variant, before/after ATS screens, unresolved requirements, and the required review state. Otherwise leave the card in `To Apply`.
 - Verify live postings with Playwright before recommending or carding them. A visible title, description, and apply action indicate an active role; navigation/footer text alone does not.
 - Use cheap title, level, location, and eligibility filtering first. Then use the JD to assess fit and experience gaps. Surface only roles that clear the configured threshold.
 - Do not add duplicate application entries. Use canonical states from `templates/states.yml`.

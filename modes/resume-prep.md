@@ -8,7 +8,10 @@ changes a canonical resume or `resume/bullet-library.md`.
 
 - **Experience evidence:** `resume/bullet-library.md`. This is the complete
   list of pre-approved claims that may be used in a rewrite.
-- **Base resume:** the Google Doc Joshua explicitly selects for this role.
+- **Branding statements:** `resume/branding.md`. Pre-approved summary
+  statements tagged by archetype and mission orientation. Exactly one may be
+  selected per role, by tag match, and inserted into the summary unmodified.
+- **Base resume:** [Joshua Hollenberg Resume](https://docs.google.com/document/d/1r9sfFf2P7AZgLiCAG2KmfQLaLYzFK3LNRHS2HFuCqG8/edit) is the default base resume for role-specific copies. Use another base only when Joshua explicitly selects it for that role.
   Different role-focused base resumes are valid and do not need to have the
   same summary, title, or ordering.
 - **Job description:** a live, readable official posting or pasted JD text.
@@ -36,8 +39,7 @@ report, not the screen prompt, chain of reasoning, or intermediate analysis.
 
 1. Confirm the live JD, company, role, location, and any application-form
    knockout questions.
-2. Confirm the specific Google Docs base resume and copy it into the role's
-   Drive application package. Never edit the selected base document.
+2. Confirm the specific Google Docs base resume (default: **Joshua Hollenberg Resume** above) and copy it into the role's Drive application package. Never edit the selected base document.
 3. Read `resume/bullet-library.md` and identify the available, approved
    evidence. Do not supplement it with plausible but unverified experience.
 4. Record source links and their modification timestamps in the Trello card.
@@ -64,14 +66,22 @@ recommend keyword stuffing, or look at the bullet library.
 ## Step 3 — Grounded rewrite
 
 Give the rewrite pass the JD, the selected base resume, the bullet library,
-and the final screening report. It must use
+`resume/branding.md`, and the final screening report. It must use
 `templates/resume-rewrite-plan.md` before making edits.
+
+Before editing the summary, match the role's archetype and Mission Fit tier
+(`modes/_profile.md` Scoring Models) against the tags in `resume/branding.md`
+and select the single closest-matching statement. If no tagged statement fits,
+say so in the rewrite plan and leave the existing summary in place pending
+Joshua's review.
 
 Allowed changes:
 
 - reorder or replace bullets with approved bullet-library evidence;
-- update the summary, headline, and skills line with JD vocabulary backed by
-  the library;
+- replace the summary with the tag-matched `resume/branding.md` statement,
+  inserted verbatim;
+- update the headline and skills line with JD vocabulary backed by the
+  library;
 - make real scope, tools, outcomes, and stakeholder work easier to find;
 - mark a requirement as unresolved when the library does not support it.
 
@@ -79,6 +89,8 @@ Forbidden changes:
 
 - adding a metric, tool, title, credential, responsibility, or date that is
   not confirmed by Joshua or the bullet library;
+- editing, blending, or drafting a new branding statement instead of using an
+  existing `resume/branding.md` entry verbatim;
 - changing the canonical base resume;
 - treating a hard experience gap as a phrasing problem.
 
@@ -106,6 +118,16 @@ Move the card to `Ready to Send` only when the revised copy has been screened,
 the card discloses whether it contains suggestions or direct edits, and Joshua
 has the review link. Never submit the application.
 
+## Completion gate
+
+No apply-prep, role-prep, or carding workflow may move a card from `To Apply`
+to `Ready to Send` on the strength of bullet ordering alone. It must first
+complete every Step 1–4 artifact above: selected-base link and timestamp,
+dedicated copy, immutable before-screen, evidence-backed rewrite plan, revised
+copy, after-screen, unresolved-gap disclosure, and `Review state: Suggested
+edits awaiting Joshua`. If any artifact is missing, leave or return the card to
+`To Apply` and state what remains.
+
 ## Functional-currency rule
 
 Resume variants are not required to match each other. They are functionally
@@ -115,5 +137,6 @@ employment end dates, unsupported claims, and contradictory credentials.
 
 ## Report
 
-End with the selected base resume, the copied variant, before/after verdict,
-unresolved requirements, and any date conflict that requires Joshua's review.
+End with the selected base resume, the copied variant, the selected branding
+statement (or why none was used), before/after verdict, unresolved
+requirements, and any date conflict that requires Joshua's review.

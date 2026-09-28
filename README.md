@@ -77,11 +77,12 @@ do not put unscored roles there.
 |---|---|---|
 | **🆕 New Targets** | High-fit company awaiting my approval. | Research saved; not monitored yet. |
 | **📚 All Tracked** | I approved the company. | Careers source is verified and monitored. |
-| **🚫 Rejected / Do Not Track** | I do not want the company resurfaced. | Added to the company ledger and skipped in future discovery. |
-| **🗄️ Archived** | Historical storage. | Not automatically treated as a rejection. |
+| **🗄️ Archived** | I have reviewed it and do not want it monitored. | Removed from the watchlist and added to the company-discovery ledger; it may still surface via a high-fit untracked role. |
+| **🚫 Rejected / Do Not Track** | I do not want roles or the company resurfaced. | Removed from the watchlist and added to the company and untracked-role discovery exclusion ledgers. |
 
 Move a company from **New Targets** to **All Tracked** to approve ongoing monitoring.
-Move a company I never want to revisit to **Rejected / Do Not Track**.
+Move a company out of active monitoring but remain open to a compelling role to **Archived**.
+Move a company you never want to revisit, including its roles, to **Rejected / Do Not Track**.
 
 ### Job Applications
 
@@ -119,7 +120,8 @@ and a strong-looking role can still fail the JD match.
 ## What I do manually
 
 - Move approved companies from **New Targets** to **All Tracked**.
-- Move unwanted companies to **Rejected / Do Not Track**.
+- Move companies you no longer want monitored to **Archived**; use **Rejected / Do Not
+  Track** only when you also want future untracked role discovery suppressed.
 - Pull interesting roles from **Backlog** to **Researching**.
 - Move roles to **To Apply** when I want application prep.
 - Review all materials and submit applications myself.
@@ -150,7 +152,7 @@ and a strong-looking role can still fail the JD match.
 | `portals.yml` | Title categories, tracked companies, search queries, and company-discovery sources. |
 | `evals/rubric.md` | Company and role scoring rules. |
 | `data/seen-postings.jsonl` | Posting outcome/deduplication ledger. |
-| `data/seen-companies.jsonl` | Company `new_target`, `tracked`, and `rejected` ledger. |
+| `data/seen-companies.jsonl` | Company `new_target`, `tracked`, `archived`, and `rejected` ledger. |
 | `data/pipeline.md` | My manually added or deferred roles. |
 
 ## Guardrails
