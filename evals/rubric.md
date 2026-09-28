@@ -1,132 +1,136 @@
-# Applicability Rubric — v5.2
+# Applicability Rubric — v6.3
 
-This is the authoritative scan rubric for Joshua Hollenberg. It deliberately separates two decisions:
+This rubric produces one auditable `total_score`. Do not create a separate
+role-fit or offer-likelihood score: both would double-count title base and the
+qualification adjustment.
 
-1. `company_fit` (1–5): whether Joshua should maintain a relationship with this company, even when it has no suitable role today.
-2. `match_score` (1–10): whether this specific live role should be surfaced to the Job Applications board.
+```text
+total_score = 0.0                                      when hard gate = Reject
+total_score = clamp(title_base + role_shape + qualification + company + salary, 0.0, 10.0)
+                                                       otherwise
+```
 
-Josh's corrections in `golden-set.csv` remain the ground truth for calibration.
+Round the total to one decimal. The title base is the approved starting score
+in `evals/title_bases.py`; it is not a free-form input.
 
-## Output
+## 1. Hard gates — always assess first
 
-For every evaluated company-role pair, return `company_fit` (1–5), `company_disposition` (`Save`, `Monitor`, or `Do not target`), `match_score` (1–10), `role_disposition` (`Pass`, `Needs review`, or `Reject`), confidence, a one-sentence `company_rationale`, and a one-sentence `role_rationale` with its main caveat.
+Reject without scoring a role that is closed, outside NYC or US-remote/NY-
+eligible, entirely below $80k, in an excluded sector/function, or requires
+work authorization, a license, clearance, or another essential qualification
+Joshua clearly lacks.
 
-### Routing
+Reject Staff, Principal, Director, Head, and VP scope. Treat Senior, Lead,
+Manager, and Architect as a seniority check, not an automatic rejection: reject
+when the JD requires people management, an executive remit, or scope Joshua
+cannot credibly claim.
 
-| Condition | Action |
-|---|---|
-| Hard exclusion | Do not save the company or surface the role. |
-| `company_fit` 4–5 | Create or update a Company Targets card. |
-| `company_fit` 3 | Save only with a strong current role or a concrete networking reason. |
-| `company_fit` 1–2 | Do not target unless Joshua explicitly opts in. |
-| `match_score` 8–10 | Surface the role to the Job Applications board. |
-| `match_score` 6–7 | Surface only when a scan has no 8–10 roles. |
-| `match_score` 1–5 | Do not surface the role; retain the company only if it qualifies independently. |
+For each core functional experience requirement, count only directly comparable
+experience. Data engineering does not by itself count as implementation,
+technical project delivery, enterprise go-live ownership, or people management.
+A role requiring two or more years beyond Joshua's directly comparable
+experience is a hard rejection unless the JD explicitly permits an evidenced
+adjacent background. A required five or more years in a core function that
+Joshua clearly has not performed is likewise a hard rejection. Do not use total
+data/analytics career tenure to close those gaps.
 
-## Gate first: role eligibility
+Poor employee-review evidence alone is not a hard gate: it affects company fit
+and should prompt verification. Reserve company hard gates for excluded sectors,
+verified ethical conflicts, or objectively incompatible operating conditions.
 
-Reject a role that is dead, outside NYC or US-remote/NY-eligible, entirely below $80k, entry-level (0–1 YOE), Staff/Principal/Director/Head/VP scope, requires 7+ years, or belongs to defense, mass surveillance, DoD/IC-first, marketing, quota-carrying AE, finance/accounting, or admin.
+## 2. Requirements and qualification adjustment
 
-`Senior` and `Lead` are not automatic rejects. Score the stated scope: 4–6 YOE and an individual-contributor remit can be viable; management scope or a 7+ YOE requirement is not.
+Before assigning a gate or adjustment, make a short evidence ledger for each
+mandatory or material qualification:
 
-## Evidence and requirement discipline
+| JD requirement | Direct candidate evidence | Closest transferable evidence | Counted relevant YOE | Gap |
+|---|---|---|---:|---:|
 
-Assess the candidate against the actual JD, not against an imagined version of
-the role.
+State the bridge explicitly before crediting transferable experience. Do not
+invent production, customer, implementation, or management depth from a
+generic technical or stakeholder claim.
 
-- Use `cv.md`, `article-digest.md`, and `resume/skills-inventory.md` as the
-  evidence set for role scoring. The skills inventory contains
-  candidate-confirmed capabilities that may not yet appear in a submitted
-  resume.
-- Score only requirements stated in the JD. A role title and its usual market
-  expectations establish the lane's starting score, but do not create an
-  unstated gap. For example, do not penalize a Solutions Engineer candidate
-  for prior pre-sales tenure, demos, discovery, or production API ownership
-  unless the JD asks for it.
-- Distinguish `required`, `preferred/bonus`, and `contextual` language.
-  A missing preferred skill is a caveat, not a hard gap; values language such
-  as ownership, curiosity, or willingness to learn should be assessed from
-  transferable evidence and should not be treated as a credential requirement.
-- Give credit for a directly confirmed general skill only at the level it is
-  documented. Do not expand generic HTML/CSS/JavaScript or API experience into
-  a claim of a named framework, API protocol, architectural ownership, or
-  production depth without evidence.
-- Keep scoring evidence separate from resume evidence:
-  `resume/bullet-library.md` remains the exclusive source for claims inserted
-  into a tailored resume.
+Classify requirements before judging gaps:
 
-## Company fit (1–5)
+1. **Mandatory:** legal/eligibility requirements; explicit `must`, `required`,
+   or `minimum qualification` language; and requirements at the top of a JD's
+   requirement list.
+2. **Material:** `significant`, `substantial`, or `proven` experience; a named
+   field/domain such as enterprise sales, public procurement, or clinical
+   implementation; and later required qualifications.
+3. **Flexible:** named technologies, `knowledge of`, `familiarity with`,
+   preferred/bonus skills, or values language—unless the JD makes them clearly
+   mandatory.
 
-Assess the company independently of the current opening.
+Fields/domains matter more than named tools. Missing Airflow is usually
+learnable; missing required enterprise-sales experience is generally material.
+Use only actual JD requirements and candidate evidence in `cv.md`,
+`article-digest.md`, and `resume/skills-inventory.md`.
 
-| Dimension | What to assess |
-|---|---|
-| Mission and ethics | Mission alignment is a positive signal; its absence is neutral. Require no excluded or ethically disqualifying business model. |
-| Product clarity and interest | Can the product and its customer impact be explained plainly? Is the problem worth spending years on? |
-| Culture and working model | Evidence of sustainable workload, respectful leadership, and NYC/remote compatibility. |
-| Career platform | Likelihood of meaningful client-facing technical, implementation, TPM, or adjacent paths over the next 12–24 months. |
-| Economic plausibility | Reasonable likelihood of meeting the compensation floor and a stable-enough operating model. |
+Use `qualification_adjustment` as a continuous one-decimal value. Its normal
+range is `-2.0` to `+0.3`, but it is not a limit: exceed it with a concise,
+evidence-based justification. A no-gap or directly evidenced case can receive a
+small positive adjustment; a reasonable transferable gap should be modestly
+negative; multiple material gaps can be much lower. A truly impossible gap is a
+hard gate, not a large negative adjustment.
 
-| Score | Meaning |
-|---:|---|
-| 5 | Priority target: proactively network and monitor. |
-| 4 | Strong target: monitor roles and pursue warm introductions. |
-| 3 | Conditional target: act only with an unusually strong role, contact, or new evidence. |
-| 2 | Weak target: product, culture, ethics, location, or career path is materially unattractive. |
-| 1 | Do not target: hard ethical conflict, incompatible work model, or no meaningful interest. |
+## 3. Role-shape adjustment
 
-Mission alignment can raise `company_fit`, but lack of a social mission must not lower it or cap an otherwise viable role. Unknown culture, compensation, or stability lowers confidence rather than automatically lowering `company_fit`; affirmative negative evidence does lower it. For companies outside Joshua's target sectors, assess culture from employee-review rating, meaningful review volume and recency, and recurring themes—not a rating alone. Insufficient culture evidence produces `Needs review`; repeated credible evidence of an extreme working model, punitive leadership, or bait-and-switch expectations lowers `company_fit`.
+The title base already represents baseline interest. Use
+`role_shape_adjustment` only for an explicit day-to-day working condition that
+makes this specific role better or worse than its title base: technical
+discovery, implementation ownership, stakeholder facilitation, and customer
+delivery can raise it; reactive support, quota pressure, excessive travel,
+architecture ownership, deep on-call work, or an undesirable work shape can
+lower it. Do not infer a role-shape adjustment merely from a requirement or
+from missing customer exposure. Do not penalize the same fact here and in the
+qualification adjustment. Normal range: `-1.0` to `+0.5`; larger adjustments
+are allowed with a specific rationale.
 
-## Role match score (1–10)
+## 4. Company adjustment
 
-Start from the strongest applicable lane, then apply explicitly stated
-attainability requirements, relationship intensity, technical burden, workload,
-and company context.
+Score the employer independently, using these internal components before
+recording one combined `company_adjustment`:
 
-| Lane | Default | Guidance |
-|---|---:|---|
-| Solutions Engineer | 9 | Top-priority lane. Lower for a hard quota, required prior pre-sales tenure (only when the JD states it), or deep-specialist technical requirements. |
-| Implementation / Solutions (other than Solutions Engineer) / Integration / Professional Services / Technical Consultant | 8 | Core bridge: technical credibility applied to client outcomes. |
-| TPM / Technical Project or Program Management | 7 | Raise when scope is stakeholder-heavy and requirements are attainable. |
-| Sales Engineer / consultative pre-sales | 7 | Keep if discovery and technical credibility matter; dock for a hard sales-history requirement or quota pressure. |
-| FDE / Deployment | 7 | Core lane alongside implementation and solutions work. Raise for client deployment and broad problem-solving; lower for heavy systems design, travel, on-call, or startup intensity. |
-| Data strategy / Data strategist | 7 | Keep when the work turns data into stakeholder or customer decisions, adoption, or implementation. Lower for reporting-only, internal analytics, or a deep-specialist requirement without a credible bridge. |
-| Technical product / Data product | 6 | Raise for hands-on technical delivery, data integrations, and strong cross-functional ownership. Lower for product-leadership scope, a pure PM background requirement, or weak technical proximity. |
-| Mission-aligned consulting | 6 | Raise only with credible hours/staffing and junior-to-mid scope. |
-| Data / software engineering | 5 | Raise only for a compelling, understandable product plus integration, customer, or real-world problem work. Deep infrastructure, SRE, systems design, or on-call-heavy work caps at 6. |
-| RevOps / GTM Ops / partnerships / BizOps | 4 | Adjacent but weakly attainable; do not surface without an unusually direct bridge. |
+- Mission/product interest: `-0.5` to `+0.7`
+- Culture/work-model evidence: `-0.6` to `+0.4`
+- Stability/career platform: `-0.2` to `+0.2`
 
-Raise for client discovery, implementation ownership, facilitation, stakeholder alignment, translation, clear communication, and a credible 4–6 YOE bridge. Lower for explicitly required deep specialization, architecture interviews, systems design, on-call, quota pressure, or 50%+ travel.
+Excellent mission, product, and culture evidence together may add up to `+1.3`.
+A healthy but uninteresting commercial company can be neutral or slightly
+negative; missing evidence is exactly `0.0`. Strong negative culture evidence
+can be strongly negative, but is not by itself a hard gate. Normal range is
+`-1.2` to `+1.3`; larger adjustments require a specific rationale.
+For production company-target routing, also record a separate `company_fit`
+from 1.0–5.0; it does not enter the total calculation.
 
-Workload is a signal, not a role gate. Early-stage, lean-team, fast-paced,
-high-output, or “work hard” language should be reported as a caveat and may
-modestly reduce confidence, but must not by itself reduce the match score or
-cap a role. Apply a material score reduction only for credible, role-specific
-evidence of an extreme model (for example 996, sustained 70+ hour expectations,
-or repeated corroborated reports of chronic overwork or punitive leadership).
-Unknown workload is a flag for Joshua to investigate, not a penalty.
+## 5. Salary adjustment
 
-`company_fit` is supporting context only:
+Entirely below $80k is a hard gate. Otherwise use salary as a meaningful but
+non-dominant adjustment: `$80–99k` normally `-1.0`, `$100–129k` around `-0.2`,
+`$130–159k` around `+0.2`, `$160–180k` around `+0.5`, and above $180k around
+`+0.6`. Missing salary is `0.0`, not a penalty. Normal range: `-1.0` to `+0.6`;
+larger adjustments are allowed with a rationale.
 
-- A company fit of 4–5 can raise an already viable role by at most 1 point.
-- A company fit of 1–2 caps a role at 5 only when it results from affirmative negative evidence (ethics, culture, work model, product, or stability), not from a lack of mission alignment or missing culture data.
-- Company mission, culture, or compensation never overrides a hard role gate.
+## Routing
 
-## Calibration rules
+- `8.0–10.0`: surface
+- `6.0–7.9`: fallback only
+- `0.0–5.9`: do not surface
 
-- A role needs a credible role-shape and attainability case to reach 8+.
-- A company can receive `company_fit` 4–5 without any current role receiving a passing score.
-- Reserve 9–10 for a highly attainable core role at a clear, compelling company with reasonable workload signals.
-- Exception: Solutions Engineer roles start at 9 by default. They still have to pass the role-eligibility gate and can drop below 9 on JD evidence, but they don't need company context to earn the 9.
-- Record company fit separately from role fit in every future labeled example.
-- Review saved high-fit companies quarterly; downgrade or archive when evidence changes.
+## Calibration
+
+For every test case, record hard-gate result, the four adjustments, calculated
+total, and a concise justification. Joshua's review is ground truth. Compare
+hard-gate agreement, each adjustment's error, and total-score routing. Change
+this rubric only after the same discrepancy appears in multiple cases.
 
 ### Changelog
 
-- **v5.2 (2026-09-28):** Split Solutions Engineer out of the Implementation/Solutions lane and raised its default from 8 to 9, per Joshua.
-- **v5.1 (2026-09-21):** Added a candidate-confirmed skills inventory for JD
-  scoring; prohibited inferred title-based gaps; clarified that preferred
-  skills and values language are not hard requirements; and made workload a
-  proportional signal rather than an automatic score cap.
-- **v5 (2026-08-20):** Added independent company-fit scoring, Company Targets routing, and a strict limit on how much company quality can affect a live-role score. The 1–10 score is now explicitly a role-surfacing score.
-- **v4 (2026-08-20):** Replaced the prior mission/culture-heavy v3 rubric with a role-shape and lifestyle model: added TPM, technical consulting, Professional Services, selective Sales Engineer, company-clarity, technical-burden, and workload criteria; demoted generic operations; clarified 4–6 YOE and Senior/Lead handling.
+- **v6.3 (2026-09-28):** Added direct-functional-experience accounting and an
+  evidence ledger; clarified company-review evidence is not a hard gate; added
+  anchored company components; and prohibited requirement/role-shape double
+  counting.
+- **v6.2 (2026-09-28):** Replaced overlapping role-fit and offer-likelihood
+  scores with title base plus four transparent adjustments. Default adjustment
+  ranges are advisory rather than fixed buckets.

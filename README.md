@@ -87,10 +87,15 @@ Move a company you never want to revisit, including its roles, to **Rejected / D
 ### Job Applications
 
 ```text
-📥 Backlog → 🔍 Researching → 📝 To Apply → ✉️ Ready to Send → 📮 Applied
-                                                           → 💬 Interviewing → 🏁 Final Round → 🎉 Offer
-                                                           → 🚫 Rejected / Closed
+🗄️ Archived / No Apply ← 📥 Backlog → 🔍 Researching → 📝 To Apply → ✉️ Ready to Send → 📮 Applied
+                                                                                 → 💬 Interviewing → 🏁 Final Round → 🎉 Offer
+                                                                                 → 🚫 Rejected / Closed
 ```
+
+Move a surfaced role you have considered but do not want to pursue to **🗄️ Archived / No
+Apply**. The next scan records it as a permanent role-level suppression, so its exact posting
+will not be surfaced again. Use **🚫 Rejected / Closed** for employer rejections, closed
+applications, or an explicit rejection instead.
 
 The system may research and prepare materials, but it never submits an application.
 

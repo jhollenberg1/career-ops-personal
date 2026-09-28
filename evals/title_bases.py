@@ -1,0 +1,36 @@
+"""Approved title-based starting scores for the role-evaluation rubric."""
+
+TITLE_BASES = {
+    "Forward Deployed Engineer": 8.0,
+    "Customer Engineer": 8.5,
+    "Customer Solutions Engineer": 8.5,
+    "Customer Success Engineer": 8.0,
+    "Solutions Engineer": 8.5,
+    "Integration Engineer": 8.0,
+    "Partner Integration Engineer": 8.0,
+    "Technical Account Manager": 7.5,
+    "Technical Delivery Manager": 6.0,
+    "Technical Engagement Manager": 6.5,
+    "Technical Adoption Manager": 5.5,
+    "Solutions Consultant": 8.0,
+    "Technical Consultant": 7.5,
+    "Professional Services Engineer": 7.0,
+    "Professional Services Consultant": 6.0,
+    "Partner Solutions Engineer": 8.0,
+    "Partner Solutions Architect": 8.0,
+    "Data Solutions Engineer": 8.5,
+    "Deployment Strategist": 8.0,
+    "Technical Onboarding Manager": 7.5,
+    "Implementation Manager": 8.0,
+    "Implementation Engineer": 8.0,
+    "Implementation Specialist": 8.0,
+    "Lead Implementation Engineer": 8.0,
+    "Technical Project Manager": 7.0,
+}
+
+
+def title_base_for(role):
+    try:
+        return TITLE_BASES[role]
+    except KeyError as exc:
+        raise ValueError(f"No approved title base for {role!r}") from exc

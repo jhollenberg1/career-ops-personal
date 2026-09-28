@@ -54,7 +54,7 @@ is the ordering Joshua should use when choosing a company to research or
 network with.
 
 ```
-Priority score = (company_fit × 15) + 15 if a current role scores 8–10 + 10 if a warm introduction or named connection exists
+Priority score = (company_fit × 15) + 15 if a current role scores 8.0–10.0 + 10 if a warm introduction or named connection exists
 ```
 
 The range is 60–100. Rank cards in descending `Priority score`, breaking ties

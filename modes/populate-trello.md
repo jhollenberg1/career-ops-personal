@@ -17,8 +17,13 @@ mapping and dedup — no carding logic lives outside the repo.
   roles Joshua has deliberately pulled from the backlog to investigate.
 - Create cards with the **trelloWriteCard** tool.
 
-(List map: 📥 Backlog · 🔍 Researching · 📝 To Apply · 📮 Applied ·
-💬 Interviewing · 🏁 Final Round · 🎉 Offer · 🚫 Rejected / Closed.)
+(List map: 🗄️ Archived / No Apply · 📥 Backlog · 🔍 Researching · 📝 To Apply ·
+📮 Applied · 💬 Interviewing · 🏁 Final Round · 🎉 Offer · 🚫 Rejected / Closed.)
+
+Create **🗄️ Archived / No Apply** as the first (leftmost) list if it does not exist.
+It is Joshua's destination for a surfaced role he has reviewed and does not want to
+pursue. Do not move cards into it automatically. **🚫 Rejected / Closed** remains for
+applications closed by the employer or roles Joshua explicitly rejects.
 
 ## One-time migration
 
@@ -27,7 +32,7 @@ When adding the Backlog list, move every existing card in `🔍 Researching` to
 cards only in Backlog; Joshua manually moves a card to Researching when ready.
 
 ## Dedup (do this FIRST)
-1. Read `data/seen-postings.jsonl`; any posting with `status: "carded"`, `"rejected-user"`, or `"archived-user"` for this URL → **skip**. The latter two are durable user decisions from the rejected/closed list or archived Trello cards.
+1. Read `data/seen-postings.jsonl`; any posting with `status: "carded"`, `"rejected-user"`, `"not-applying-user"`, or `"archived-user"` for this URL → **skip**. The latter three are durable user decisions from the rejected/closed list, the Archived / No Apply list, or legacy archived Trello cards.
 2. Search the board (trelloSearch `search_cards` scoped to this board) for the JD URL or for a
    card named `{Company} — {Role}`. If found on any list, **skip** — do not create a duplicate.
 
@@ -44,7 +49,7 @@ cards only in Backlog; Joshua manually moves a card to Researching when ready.
   - `Glassdoor:` rating if found
   - `JD:` 1–2 sentence `job_description`
   - `Verified:` `{verification.checkedAt}` — `{verification.finalUrl}`
-- **Label (optional):** score-band color — 8–10 green, 6–7 yellow (labels on this board are
+- **Label (optional):** score-band color — 8.0–10.0 green, 6.0–7.9 yellow (labels on this board are
   color-only; use the existing green/yellow labels).
 
 ## After carding

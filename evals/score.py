@@ -1,167 +1,113 @@
 #!/usr/bin/env python3
-"""
-Applicability eval scorer.
-
-Reads evals/golden-set.csv, compares a model's drafted label (`model_label`)
-against Josh's corrected label (`human_label`), and reports agreement only for
-rows that have both. A human-labeled case with no independent model draft is a
-useful fixture, not a model disagreement.
-
-Ground truth = `human_label`. Rows with an empty human_label are treated as
-UNLABELED and skipped (they're still waiting for Josh to correct/confirm).
-
-Usage:  python3 evals/score.py
-Writes: evals/report.md  (and prints a summary)
-
-Stdlib only — no dependencies.
-"""
+"""Score role-evaluation reviews with default-range outlier reporting."""
 import csv
 import os
-from collections import defaultdict, Counter
+from collections import Counter, defaultdict
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-CSV_PATH = os.path.join(HERE, "golden-set.csv")
-REPORT_PATH = os.path.join(HERE, "report.md")
-
-CLASSES = ["pass", "reject", "needs review"]
-
-
-def norm(label: str) -> str:
-    if label is None:
-        return ""
-    s = label.strip().lower()
-    aliases = {
-        "pass": "pass", "p": "pass",
-        "reject": "reject", "rejected": "reject", "r": "reject", "no": "reject",
-        "needs review": "needs review", "review": "needs review",
-        "needs-review": "needs review", "maybe": "needs review", "nr": "needs review",
-    }
-    return aliases.get(s, s)
+PATHS = {"candidates": "candidates.csv", "model": "model-predictions.csv", "human": "human-reviews.csv"}
+DEFAULT_RANGES = {
+    "role_shape": (-1.0, 0.5),
+    "qualification": (-2.0, 0.3),
+    "company": (-1.2, 1.3),
+    "salary": (-1.0, 0.6),
+}
 
 
-def load_rows():
-    with open(CSV_PATH, newline="", encoding="utf-8") as f:
-        return list(csv.DictReader(f))
+def load(name):
+    with open(os.path.join(HERE, PATHS[name]), newline="", encoding="utf-8") as handle:
+        return {row["id"]: row for row in csv.DictReader(handle)}
 
 
-def prf(tp, fp, fn):
-    precision = tp / (tp + fp) if (tp + fp) else 0.0
-    recall = tp / (tp + fn) if (tp + fn) else 0.0
-    f1 = (2 * precision * recall / (precision + recall)) if (precision + recall) else 0.0
-    return precision, recall, f1
+def gate(value, source, row_id):
+    normalized = (value or "").strip().lower()
+    if normalized not in {"pass", "reject"}:
+        raise ValueError(f"{source}: {row_id} hard gate must be Pass or Reject")
+    return normalized
+
+
+def adjustment(value, kind, source, row_id, allow_blank=False):
+    if not (value or "").strip() and allow_blank:
+        return 0.0
+    try:
+        parsed = round(float(value), 1)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{source}: {row_id} {kind} adjustment is required") from exc
+    return parsed
+
+
+def total(base, hard_gate, adjustments):
+    return 0.0 if hard_gate == "reject" else round(max(0.0, min(10.0, base + sum(adjustments.values()))), 1)
+
+
+def band(value):
+    return "Pass" if value >= 8.0 else "Needs review" if value >= 6.0 else "Reject"
+
+
+def scored(row, prefix, base, source):
+    hard_gate = gate(row.get(f"{prefix}_hard_gate"), source, row["id"])
+    adjustments = {kind: adjustment(row.get(f"{prefix}_{kind}_adjustment"), kind, source, row["id"], hard_gate == "reject") for kind in DEFAULT_RANGES}
+    expected = total(base, hard_gate, adjustments)
+    raw_total = (row.get(f"{prefix}_total") or "").strip()
+    if hard_gate == "reject" and not raw_total:
+        entered = 0.0
+    else:
+        try:
+            entered = round(float(raw_total), 1)
+        except ValueError as exc:
+            raise ValueError(f"{source}: {row['id']} total is required") from exc
+    if entered != expected:
+        raise ValueError(f"{source}: {row['id']} total {entered:.1f} must equal {expected:.1f}")
+    return hard_gate, adjustments, entered
 
 
 def main():
-    rows = load_rows()
-    scoreable, awaiting_model, awaiting_human, unstarted = [], [], [], []
-    for r in rows:
-        h = norm(r.get("human_label", ""))
-        m = norm(r.get("model_label", ""))
-        if h and m:
-            scoreable.append((r, m, h))
-        elif h:
-            awaiting_model.append(r)
-        elif m:
-            awaiting_human.append(r)
-        else:
-            unstarted.append(r)
-
-    n = len(scoreable)
-    out = []
-    out.append("# Applicability Eval Report\n")
-    out.append(f"Golden set: `{os.path.basename(CSV_PATH)}` — {len(rows)} roles.\n")
-    out.append("\n## Coverage\n")
-    out.append(f"- **Comparable (model draft + Josh label): {n}**\n")
-    out.append(f"- Human-labeled, awaiting independent model draft: {len(awaiting_model)}\n")
-    out.append(f"- Model-drafted, awaiting Josh's label: {len(awaiting_human)}\n")
-    out.append(f"- Not yet drafted or labeled: {len(unstarted)}\n")
-
-    versions = Counter((r.get("rubric_version") or "unknown").strip() for r, _, _ in scoreable)
-    if versions:
-        out.append("- Comparable rows by rubric version: " + ", ".join(
-            f"`{version}`: {count}" for version, count in sorted(versions.items())
-        ) + "\n")
-    current_version = "v4"
-    current_count = versions.get(current_version, 0)
-    if current_count == 0:
-        out.append("- **Current-rubric warning:** no independently drafted `v4` rows exist yet; "
-                   "the agreement metric below is historical and is not a v4 accuracy claim.\n")
-
-    if n == 0:
-        out.append("\n_No comparable rows yet. Draft labels without reading `human_label`, then re-run._\n")
-        _write(out)
-        print("".join(out))
-        return
-
-    # Confusion matrix + accuracy
-    correct = sum(1 for _, m, h in scoreable if m == h)
-    acc = correct / n
-    confusion = defaultdict(Counter)  # confusion[human][model]
-    for _, m, h in scoreable:
-        confusion[h][m] += 1
-
-    heading = "Headline" if current_count else "Historical headline (not a v4 metric)"
-    out.append(f"\n## {heading}\n")
-    out.append(f"- **Agreement (accuracy): {correct}/{n} = {acc:.0%}**\n")
-
-    # Per-class precision/recall/F1 (one-vs-rest, from the model's perspective)
-    out.append("\n## Per-class (model vs. your labels)\n")
-    out.append("| Class | Precision | Recall | F1 | Support |\n|---|---|---|---|---|\n")
-    for c in CLASSES:
-        tp = sum(1 for _, m, h in scoreable if m == c and h == c)
-        fp = sum(1 for _, m, h in scoreable if m == c and h != c)
-        fn = sum(1 for _, m, h in scoreable if m != c and h == c)
-        support = sum(1 for _, m, h in scoreable if h == c)
-        p, rc, f1 = prf(tp, fp, fn)
-        out.append(f"| {c} | {p:.0%} | {rc:.0%} | {f1:.2f} | {support} |\n")
-
-    # Confusion matrix
-    out.append("\n## Confusion matrix (rows = your label, cols = model)\n")
-    out.append("| your ↓ / model → | " + " | ".join(CLASSES) + " |\n")
-    out.append("|---" * (len(CLASSES) + 1) + "|\n")
-    for h in CLASSES:
-        cells = " | ".join(str(confusion[h][m]) for m in CLASSES)
-        out.append(f"| **{h}** | {cells} |\n")
-
-    # Needs-review calibration
-    model_nr = [(r, h) for r, m, h in scoreable if m == "needs review"]
-    out.append("\n## Abstention (needs review) calibration\n")
-    if model_nr:
-        out.append(f"- Model abstained on {len(model_nr)} labeled role(s). "
-                   "Your calls on those:\n")
-        for r, h in model_nr:
-            out.append(f"  - {r['company']} — {r['role']}: you said **{h}**\n")
-        out.append("  - _Healthy if these were genuinely borderline; if you had a "
-                   "confident call, the rubric was too timid._\n")
-    else:
-        out.append("- Model did not abstain on any labeled role.\n")
-
-    # Disagreements — the important part
-    disagreements = [(r, m, h) for r, m, h in scoreable if m != h]
-    out.append("\n## Disagreements (fix the rubric here)\n")
-    if not disagreements:
-        out.append("- None on the labeled set. \n")
-    else:
-        for r, m, h in disagreements:
-            out.append(f"- **{r['company']} — {r['role']}**: model **{m}** vs you **{h}**. "
-                       f"{r.get('human_notes') or r.get('model_rationale','')}\n")
-
-    # False positives are the costly ones (model Pass, you Reject)
-    fps = [(r, h) for r, m, h in scoreable if m == "pass" and h == "reject"]
-    if fps:
-        out.append("\n**Costly false positives** (model said Pass, you said Reject — "
-                   "these waste your review time):\n")
-        for r, h in fps:
-            out.append(f"- {r['company']} — {r['role']}\n")
-
-    _write(out)
-    print("".join(out))
-    print(f"\nWrote {REPORT_PATH}")
+    candidates, models, humans = load("candidates"), load("model"), load("human")
+    comparable = []
+    for row_id, candidate in candidates.items():
+        if row_id not in models or row_id not in humans:
+            continue
+        base = float(humans[row_id]["title_base"])
+        model = scored(models[row_id], "model", base, "model-predictions.csv")
+        human = scored(humans[row_id], "human", base, "human-reviews.csv")
+        comparable.append((candidate, model, human))
+    out = ["# Role-Eval Report\n", "\n## Coverage\n", f"- Test cases: **{len(candidates)}**\n", f"- Comparable: **{len(comparable)}**\n"]
+    if not comparable:
+        out.append("\n_No comparable reviews yet. Fill every adjustment and the calculated total in both files._\n")
+        write(out); print("".join(out)); return
+    out.append("\n## Agreement\n")
+    for kind in DEFAULT_RANGES:
+        mae = sum(abs(model[1][kind] - human[1][kind]) for _, model, human in comparable) / len(comparable)
+        out.append(f"- {kind.replace('_', ' ').title()} adjustment MAE: **{mae:.2f}**\n")
+    total_mae = sum(abs(model[2] - human[2]) for _, model, human in comparable) / len(comparable)
+    gate_agreement = sum(model[0] == human[0] for _, model, human in comparable)
+    out += [f"- Total-score MAE: **{total_mae:.2f}**\n", f"- Hard-gate agreement: **{gate_agreement}/{len(comparable)}**\n"]
+    out.append("\n## Adjustment outliers (review, not errors)\n")
+    for source_name, prefix, rows in [("Model", "model", models), ("Joshua", "human", humans)]:
+        outliers = []
+        for row_id, row in rows.items():
+            if row_id not in candidates or not (row.get(f"{prefix}_hard_gate") or "").strip():
+                continue
+            if gate(row.get(f"{prefix}_hard_gate"), source_name, row_id) == "reject":
+                continue
+            for kind, (lower, upper) in DEFAULT_RANGES.items():
+                value = adjustment(row.get(f"{prefix}_{kind}_adjustment"), kind, source_name, row_id)
+                if value < lower or value > upper:
+                    outliers.append(f"- {source_name}: {row_id} {kind} {value:+.1f} (default {lower:+.1f} to {upper:+.1f})\n")
+        out.extend(outliers or [f"- {source_name}: none.\n"])
+    matrix = defaultdict(Counter)
+    for _, model, human in comparable:
+        matrix[band(human[2])][band(model[2])] += 1
+    labels = ["Pass", "Needs review", "Reject"]
+    out += ["\n## Total routing matrix\n", "| Joshua ↓ / model → | " + " | ".join(labels) + " |\n", "|---|---|---|---|\n"]
+    for human_label in labels:
+        out.append("| **" + human_label + "** | " + " | ".join(str(matrix[human_label][model_label]) for model_label in labels) + " |\n")
+    write(out); print("".join(out))
 
 
-def _write(lines):
-    with open(REPORT_PATH, "w", encoding="utf-8") as f:
-        f.write("".join(lines))
+def write(lines):
+    with open(os.path.join(HERE, "report.md"), "w", encoding="utf-8") as handle:
+        handle.write("".join(lines))
 
 
 if __name__ == "__main__":

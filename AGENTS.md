@@ -34,6 +34,10 @@ Exclude generic operations, GTM, RevOps, partnerships, business development, sal
 - Verify live postings with Playwright before recommending or carding them. A visible title, description, and apply action indicate an active role; navigation/footer text alone does not.
 - Use cheap title, level, location, and eligibility filtering first. Then use the JD to assess fit and experience gaps. Surface only roles that clear the configured threshold.
 - Do not add duplicate application entries. Use canonical states from `templates/states.yml`.
+- **Role evaluation:** Use the v6 files in `evals/`: assess hard gates first, then record the
+  title base plus one-decimal role-shape, qualification, company, and salary adjustments with a
+  calculated total and justification. Score from `candidates.csv` without reading
+  `human-reviews.csv`; evaluate only after Joshua independently fills the same fields.
 
 ## Useful commands
 
