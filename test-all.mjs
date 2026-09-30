@@ -67,9 +67,14 @@ const scripts = [
   { name: 'merge-tracker.mjs', expectExit: 0 },
   { name: 'scanner/test/core.test.mjs', expectExit: 0 },
   { name: 'scanner/test/validate-postings.test.mjs', expectExit: 0 },
+  { name: 'scanner/test/role-scan.test.mjs', expectExit: 0 },
   { name: '--check scanner/scan.mjs', expectExit: 0 },
   { name: '--check scanner/report.mjs', expectExit: 0 },
   { name: '--check scanner/verify.mjs', expectExit: 0 },
+  { name: '--check scanner/candidates.mjs', expectExit: 0 },
+  { name: '--check scanner/route.mjs', expectExit: 0 },
+  { name: '--check scanner/record.mjs', expectExit: 0 },
+  { name: '--check scanner/probe-sources.mjs', expectExit: 0 },
 ];
 
 for (const { name, allowFail } of scripts) {

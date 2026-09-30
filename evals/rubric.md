@@ -11,7 +11,7 @@ total_score = clamp(title_base + role_shape + qualification + company + salary, 
 ```
 
 Round the total to one decimal. The title base is the approved starting score
-in `evals/title_bases.py`; it is not a free-form input.
+in `evals/title-bases.json`; it is not a free-form input.
 
 ## 1. Hard gates — always assess first
 
@@ -92,7 +92,7 @@ are allowed with a specific rationale.
 Score the employer independently, using these internal components before
 recording one combined `company_adjustment`:
 
-- Mission/product interest: `-0.5` to `+0.7`
+- Mission/product interest and practical human benefit: `-1.0` to `+0.7`
 - Culture/work-model evidence: `-0.6` to `+0.4`
 - Stability/career platform: `-0.2` to `+0.2`
 
@@ -101,8 +101,43 @@ A healthy but uninteresting commercial company can be neutral or slightly
 negative; missing evidence is exactly `0.0`. Strong negative culture evidence
 can be strongly negative, but is not by itself a hard gate. Normal range is
 `-1.2` to `+1.3`; larger adjustments require a specific rationale.
+
+Assess mission/product interest through both **mission relatability** and
+**practical human benefit**: can a nontechnical person readily understand whom
+the product helps and how it makes a meaningful difference? A product centered
+on deep technical infrastructure, compliance, security, or internal
+administration may receive a `-0.2` to `-1.0` mission/product-interest
+deduction when that benefit is obscure or it is simply not relatable to an
+average person. Use the more severe end only when the product is deeply
+technical *and* its human benefit cannot be concretely explained. This is a
+preference, not an exclusion: do not deduct merely because work is technical,
+and do not deduct when the company demonstrably advances a target sector or has
+a clear, relatable customer or public benefit.
+
+Use these calibrated anchors for the mission/product-interest component:
+
+- **`+0.4` to `+0.7`:** a target-sector mission or direct, compelling benefit to
+  people (for example access to benefits, care coordination, accessibility, or
+  food access).
+- **`+0.1` to `+0.4`:** a clearly useful, relatable benefit to an essential
+  local service, small business, or physical-world operation (for example
+  veterinary care, hospital staffing, local groceries, permitting, or reduced
+  fleet fuel use).
+- **`0.0`:** ordinary commercial software with a concrete but emotionally
+  neutral benefit (for example payroll, returns, property maintenance, or
+  building operations).
+- **`-0.2` to `-0.5`:** primarily internal, administrative, or compliance work
+  whose benefit is real but narrow or indirect.
+- **`-0.6` to `-1.0`:** deeply technical infrastructure, security, or
+  compliance products whose benefit is abstract to a nontechnical person and
+  not tied to a clear human, customer, or public outcome.
+
 For production company-target routing, also record a separate `company_fit`
-from 1.0–5.0; it does not enter the total calculation.
+from 1.0–5.0; it does not enter the total calculation. Apply the same
+low-relatability preference as a `-0.3` to `-1.0` adjustment to that rating
+before routing. State the practical-benefit rationale in `company_rationale`;
+do not use it to turn an otherwise good, culture-positive company into a hard
+exclusion.
 
 ## 5. Salary adjustment
 

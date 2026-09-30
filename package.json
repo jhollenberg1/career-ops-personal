@@ -14,7 +14,11 @@
     "discover": "node scanner/scan.mjs",
     "discover:all": "node scanner/scan.mjs --all",
     "scan": "node scanner/scan.mjs",
-    "scan:test": "node scanner/test/core.test.mjs && node scanner/test/validate-postings.test.mjs",
+    "scan:test": "node scanner/test/core.test.mjs && node scanner/test/validate-postings.test.mjs && node scanner/test/role-scan.test.mjs",
+    "scan:candidates": "node scanner/candidates.mjs",
+    "scan:route": "node scanner/route.mjs",
+    "scan:record": "node scanner/record.mjs",
+    "scan:probe": "node scanner/probe-sources.mjs",
     "validate-postings": "node validate-postings.mjs"
   },
   "keywords": [

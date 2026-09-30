@@ -1,6 +1,6 @@
 # Mode: populate-trello — Card surfaced roles onto the Trello board
 
-Takes the rubric-scored, surfaced roles produced by `modes/role-scan.md` (step 18 hand-off)
+Takes the rubric-scored, surfaced roles produced by `modes/role-scan.md` (step 11 hand-off file from `npm run scan:route`)
 and creates cards on the Trello **Job Applications** board. This mode owns all Trello
 mapping and dedup — no carding logic lives outside the repo.
 
@@ -37,6 +37,10 @@ cards only in Backlog; Joshua manually moves a card to Researching when ready.
    card named `{Company} — {Role}`. If found on any list, **skip** — do not create a duplicate.
 
 ## Card creation (per new role)
+A role-scan handoff carries a prebuilt `card` `{name, description, label}` from
+`scanner/route.mjs`. Use it as written. The fields below define that format and apply only
+to a role that arrives without one.
+
 - **Name:** `{Company} — {Role}`
 - **List:** 📥 Backlog
 - **Description:**
@@ -53,9 +57,15 @@ cards only in Backlog; Joshua manually moves a card to Researching when ready.
   color-only; use the existing green/yellow labels).
 
 ## After carding
-Append one line per carded role to `data/seen-postings.jsonl`:
-`{date_seen, company, role, url, status:"carded", sector, last_checked}` (append only).
-Write the `"carded"` ledger line after the board is updated so re-runs skip the posting.
+After the board is updated, record the carded roles so re-runs skip them:
+
+```bash
+npm run scan:record -- carded <handoff.json> [url ...]
+```
+
+List URLs only when some cards were not created. The script appends
+`{date_seen, company, role, url, status:"carded", reason, sector, last_checked}` and skips
+roles already recorded as carded.
 
 ## Guardrails
 - Never move or edit a card the human has already advanced past 📥 Backlog.

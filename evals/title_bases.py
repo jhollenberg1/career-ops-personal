@@ -1,32 +1,15 @@
-"""Approved title-based starting scores for the role-evaluation rubric."""
+"""Approved title-based starting scores for the role-evaluation rubric.
 
-TITLE_BASES = {
-    "Forward Deployed Engineer": 8.0,
-    "Customer Engineer": 8.5,
-    "Customer Solutions Engineer": 8.5,
-    "Customer Success Engineer": 8.0,
-    "Solutions Engineer": 8.5,
-    "Integration Engineer": 8.0,
-    "Partner Integration Engineer": 8.0,
-    "Technical Account Manager": 7.5,
-    "Technical Delivery Manager": 6.0,
-    "Technical Engagement Manager": 6.5,
-    "Technical Adoption Manager": 5.5,
-    "Solutions Consultant": 8.0,
-    "Technical Consultant": 7.5,
-    "Professional Services Engineer": 7.0,
-    "Professional Services Consultant": 6.0,
-    "Partner Solutions Engineer": 8.0,
-    "Partner Solutions Architect": 8.0,
-    "Data Solutions Engineer": 8.5,
-    "Deployment Strategist": 8.0,
-    "Technical Onboarding Manager": 7.5,
-    "Implementation Manager": 8.0,
-    "Implementation Engineer": 8.0,
-    "Implementation Specialist": 8.0,
-    "Lead Implementation Engineer": 8.0,
-    "Technical Project Manager": 7.0,
-}
+`title-bases.json` is the single source of truth, shared with the scanner's
+route step (`scanner/rubric.mjs`). Edit the JSON, not this module.
+"""
+import json
+import os
+
+with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "title-bases.json"), encoding="utf-8") as handle:
+    # An entry is a number or {"base": n, "aliases": [...]}; aliases only matter to
+    # the scanner, which maps posting titles onto these approved names.
+    TITLE_BASES = {name: value if isinstance(value, (int, float)) else value["base"] for name, value in json.load(handle).items()}
 
 
 def title_base_for(role):

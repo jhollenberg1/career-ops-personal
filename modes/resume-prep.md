@@ -69,11 +69,15 @@ Give the rewrite pass the JD, the selected base resume, the bullet library,
 `resume/branding.md`, and the final screening report. It must use
 `templates/resume-rewrite-plan.md` before making edits.
 
-Before editing the summary, match the role's archetype and Mission Fit tier
-(`modes/_profile.md` Scoring Models) against the tags in `resume/branding.md`
-and select the single closest-matching statement. If no tagged statement fits,
-say so in the rewrite plan and leave the existing summary in place pending
-Joshua's review.
+Before editing the summary, match the role's archetype and the JD's
+mission-branding relevance against the tags in `resume/branding.md`, then
+select the single closest-matching statement. Mission Fit and company sector
+may inform whether Joshua pursues the role, but they do not by themselves
+authorize a mission-driven branding statement. A mission-driven statement
+requires the exact JD evidence required by `resume/branding.md`'s
+mission-branding evidence gate; otherwise select the matching neutral
+statement. If no tagged statement fits, say so in the rewrite plan and leave
+the existing summary in place pending Joshua's review.
 
 Allowed changes:
 

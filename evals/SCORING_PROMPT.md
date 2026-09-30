@@ -1,6 +1,6 @@
 # Blind scoring instructions
 
-Read `rubric.md`, `title_bases.py`, and `candidates.csv`. Do not read
+Read `rubric.md`, `title-bases.json`, and `candidates.csv`. Do not read
 `human-reviews.csv`. For each case, first create the rubric's evidence ledger
 for every mandatory or material qualification, then set `model_hard_gate` to
 `Pass` or `Reject`. Count only directly comparable functional experience; name

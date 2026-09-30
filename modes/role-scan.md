@@ -9,7 +9,8 @@ Scans configured job portals, filters by title relevance, applies the v6 rubric,
 > - `config/profile.yml` → `narrative.excluded_sectors` / `excluded_companies` — hard exclusions
 > - `modes/_profile.md` → `## Your Target Roles` / `## Your Values` — user context only
 > - `resume/skills-inventory.md` — candidate-confirmed capabilities for JD scoring only; not resume-rewrite evidence
-> - `evals/rubric.md` — the **authoritative scoring rubric** (v6: decimal company fit and role match scores)
+> - `evals/rubric.md` — the **authoritative scoring rubric** (v6.3: title base plus four adjustments)
+> - `evals/title-bases.json` — approved title bases, applied by `scanner/route.mjs`
 > - `data/seen-postings.jsonl` — the authoritative posting-level dedupe ledger
 > - Company Targets Trello board → **📚 All Tracked** is the approval queue for additions to
 >   `portals.yml`; **🆕 New Targets** is not scanned. **🚫 Rejected / Do Not Track** is the
@@ -125,217 +126,172 @@ Levels are additive — run all, merge results, then deduplicate.
    All Tracked, mark its careers source `needs resolution`, and report it—do not add a guessed
    URL. Never import 🆕 New Targets: moving a card into All Tracked is the user's approval signal.
 2. **Read configuration**: `portals.yml`
-3. **Read the candidate queue**: `data/pipeline.md` contains user-supplied or explicitly deferred URLs only. Every unprocessed pending URL is an input candidate to score, not a duplicate to discard. Automated scans do not add unscored roles to this queue.
-4. **Read the dedupe ledger**: `data/seen-postings.jsonl` → use the latest record for each URL (and secondarily company + normalized role). This is the authoritative posting-level dedupe source; apply its re-check windows from `portals.yml`.
-5. **Synchronize user-resolved Trello roles before discovery:** Read the Job Applications board's **🗄️ Archived / No Apply** and **🚫 Rejected / Closed** lists *and* search the same board for legacy archived cards (`is:archived`). For each non-instructional card, extract its JD URL from `Link:` or `Job link:` when present and append a latest-wins record to `data/seen-postings.jsonl` with `status: "not-applying-user"` (Archived / No Apply), `"rejected-user"` (Rejected / Closed), or `"archived-user"` (legacy archived card), `reason: "User-resolved Trello role"`, and `last_checked` today. These statuses are permanent suppressions: do not re-validate, score, queue, or card their exact URLs unless Joshua explicitly restores the card. If an old card lacks a JD URL, keep a normalized `{company, role}` exclusion in the run's in-memory exclusion set and suppress a matching candidate; report the unlinked card so it can be repaired later. Ignore board instruction/template cards. Then read `data/applications.md`; do not re-evaluate a company + normalized role that has already reached an application decision.
-6. **Read scoring rubric**: `evals/rubric.md`. Use `_profile.md` only for narrative context not already captured by the rubric.
+3. **Synchronize user-resolved Trello roles before discovery:** Read the Job Applications
+   board's **🗄️ Archived / No Apply** and **🚫 Rejected / Closed** lists and search the same
+   board for legacy archived cards (`is:archived`). Save every card as
+   `{list, name, desc, archived}` in one JSON array and run:
 
-7. **Level 1 — careers-page scan** (sequential):
+   ```bash
+   npm run scan:record -- user-resolved <cards.json>
+   ```
+
+   The script maps the lists to `not-applying-user`, `rejected-user`, and `archived-user`,
+   takes the JD URL from `Link:` or `Job link:`, records a company + role suppression for a card
+   with no link, ignores instruction cards, and skips cards already recorded. These are permanent
+   suppressions unless Joshua restores the card. Report any unlinked cards it lists so they can
+   be repaired.
+4. **Read scoring rubric**: `evals/rubric.md` and `evals/title-bases.json`. Use `_profile.md`
+   only for narrative context not already captured by the rubric.
+
+5. **Level 1 — careers-page scan** (sequential):
    For each selected enabled `careers_page` company with a defined `careers_url`:
    a. `browser_navigate` to `careers_url`
    b. `browser_snapshot` to read all job listings
    c. If the page has department filters, navigate relevant sections
-   d. Extract from each listing: `{title, detail_url, company, official_careers_url}`
+   d. Extract from each listing: `{title, url, company, official_careers_url, location}`
    e. If results are paginated, navigate additional pages
-   f. Accumulate in candidate list
+   f. Append each listing to `output/scans/leads-{YYYY-MM-DD}.json` with `source: "careers_page"`
    g. If `careers_url` fails (404, redirect), use WebSearch only to locate a replacement
       official careers page, then note the source for a `portals.yml` update. Do not use it
       to enumerate roles.
 
-8. **Level 2 — ATS APIs / feeds** (parallel):
-   For each enabled `ats_api` company in `tracked_companies`:
-   a. WebFetch the API/feed URL
-   b. If `api_provider` is defined, use its parser; otherwise infer from domain
-   c. For **Ashby**, send POST with:
-      - `operationName: ApiJobBoardWithTeams`
-      - `variables.organizationHostedJobsPageName: {company}`
-      - GraphQL query for `jobBoardWithTeams` + `jobPostings { id title locationName employmentType compensationTierSummary }`
-   d. For **BambooHR**, the list only has basic metadata. For each relevant item, GET the detail URL and extract the full JD from `result.jobOpening`. Use `jobOpeningShareUrl` as public URL if available.
-   e. For **Workday**, POST `{"appliedFacets":{},"limit":20,"offset":0,"searchText":""}` and paginate by `offset` until exhausted
-   f. Extract and normalize: `{title, detail_url, company, official_careers_url}`
-   g. Accumulate in candidate list (dedup with Level 1)
+6. **Level 2 — ATS APIs**: `npm run discover -- --no-queue` reads every enabled `ats_api`
+   source and writes a scan report to `output/scans/`. Only when Bash has no network, read the
+   same endpoints with WebFetch (see "Known API/feed patterns" below) and append the postings to
+   the leads file with `source: "ats-api"`.
 
-9. **Level 3 — WebSearch** (parallel where possible):
+7. **Level 3 — WebSearch** (parallel where possible):
    First run every selected tracked-company `scan_query` for enabled `websearch` sources.
-   Then run the broader untracked-company queries below. In both cases, generic Operations,
-   Partnerships, RevOps, and BizOps titles fail the title filter unless they also contain an
-   approved technical/client-delivery role term.
-
-   For each query in `search_queries` with `enabled: true`:
+   Then run every `search_queries` entry with `enabled: true`.
    a. Run WebSearch with the defined `query`.
    b. Extract a prospective role, company, and the exact official job-detail URL. Resolve the
       employer's official careers page or ATS board. Do not use Reddit, LinkedIn, job
       aggregators, or a search snippet as a careers or job source.
-   c. Before validation, cross-check the normalized employer against
-      `data/seen-companies.jsonl` and the Company Targets **🚫 Rejected / Do Not Track** list.
-      Skip a `rejected` company. Do not exclude a company merely because it is `archived` or in
-      **🗄️ Archived**: a high-fit role there remains eligible. Add the role to the candidate
-      list only with both an official careers URL and exact public job-detail URL. Keep the
-      search-result URL only as provenance.
-   d. Process it through the same title filter, dedupe, exact-detail validation, enrichment, and
-      rubric scoring as tracked-company roles. The company is still untracked: do not add it to
-      `portals.yml` or move its Company Targets card to All Tracked.
+   c. Append `{title, company, url, official_careers_url, location, domain, provenance_url,
+      source: "websearch"}` to the leads file. Keep the search-result URL only as
+      `provenance_url`. The company stays untracked: do not add it to `portals.yml` or move its
+      Company Targets card to All Tracked.
 
-10. **Cheap title and level filter** using `title_filter` from `portals.yml`:
-   - At least 1 `core` or `explore` keyword (or legacy `positive` keyword) must appear in the title (case-insensitive).
-   - A Core title is a direct role-shape hypothesis; an Explore title is intentionally broader and must earn its way through the JD pass. Neither is carded solely on title.
-   - 0 `negative` keywords may appear. This removes Staff, Principal, Director, Head, VP, and other clearly out-of-level titles before JD work.
-   - `Senior` and `Lead` are not rejected here; the JD pass checks individual-contributor scope and stated experience.
+8. **Screen candidates** with one command. Do not filter, dedupe, or validate by hand:
 
-11. **Deduplicate and merge candidates**:
-   - `seen-postings.jsonl` is authoritative. Skip `carded` URLs always; skip `closed` and `rejected-guardrail` URLs only while within their configured re-check window; skip `dedup` URLs while the matching board record remains present.
-   - Skip company + normalized-role matches that are already evaluated in `applications.md` or the Trello user-resolution exclusion set from step 5.
-   - An unprocessed URL already in `pipeline.md` is **not** a duplicate: it is an input candidate. If the same URL appears again from a board/API/search level, merge its metadata into one candidate and score it once.
-   - `scan-history.tsv` is observability only. Never use an `added` history row by itself to suppress a candidate that has not yet been scored and resolved in the ledger.
+   ```bash
+   npm run scan:candidates -- --leads output/scans/leads-{YYYY-MM-DD}.json \
+     --scan-report output/scans/{discover-report}.json --pipeline
+   ```
 
-12. **Validate every role candidate** — immediately before scoring:
+   The script applies company exclusions (`rejected` in `data/seen-companies.jsonl` and
+   `excluded_companies` in `config/profile.yml`; `archived` companies stay eligible), the
+   `title_filter` (not applied to user-supplied `pipeline.md` URLs), the `location_filter`, the
+   `seen-postings.jsonl` ledger with its re-check windows, and earlier decisions on the same
+   role at the same company. For earlier decisions it compares the core role with seniority,
+   location, and posting noise removed: a role Joshua rejected, marked no-apply, or archived
+   suppresses the same role at equal or higher seniority, and a less senior posting continues
+   with a `related` note; a carded or `applications.md` role suppresses only an identical
+   repost. It merges duplicate URLs across levels, requires
+   an official careers URL for every non-pipeline lead, validates the rest with the shared
+   Playwright validator, appends `closed` for failed validation, and logs skips to
+   `scan-history.tsv`. Only its `active` list continues. When Bash has no network, pass
+   `--no-verify`, validate each URL with the browser tool, and say so in the summary.
 
-    APIs, saved pipeline entries, and direct careers boards are discovery sources, not
-    proof that a particular requisition remains open. Run the exact public job-detail URLs
-    through the shared validator in one batch:
+9. **Match the title, then enrich and score each active candidate.** This is the only model
+   judgment in the scan. Start from the candidate object in the `active` list.
+
+   a. **Title match first.** Read the JD's day-to-day responsibilities and set
+      `title_base_match` to one exact name from `evals/title-bases.json`, or `null`. Decide
+      this before assessing Joshua's fit, and without regard to the score it would lead to.
+      - `null` is the expected result. Most roles are not one of these jobs, and a rejection
+        here costs Joshua nothing because he reviews only surfaced roles.
+      - Match only when the primary work is the same as that title's usual work: the same
+        kind of deliverable for the same kind of customer or stakeholder. Shared words in the
+        title are not evidence. A role that is mostly something else with some of that work is
+        not a match. For example, a Software Engineer on an integrations team who builds
+        internal connectors is not an Integration Engineer, and a Customer Support Engineer
+        answering tickets is not a Customer Engineer.
+      - A different title for the same job is a match: a "Forward Deployed Software Engineer"
+        whose job is embedding with customers to deploy the product is a Forward Deployed
+        Engineer.
+      - When unsure, choose `null`. When two entries fit, choose the one whose work matches
+        most closely, not the one with the higher base.
+      - A posting title that already contains an approved title is matched in code, and this
+        field is ignored.
+
+      If `title_base_match` is `null`, stop. Record only `title_base_match` and, for an
+      untracked company, `company_fit` and `company_rationale`, since company routing still
+      needs them. The route rejects the role.
+
+   b. **Enrich** from the JD page: `salary`, `level`, `location`, `job_description` (1–2
+      sentences on day-to-day work), `company_description`, `recruiter_contact`, `glassdoor`,
+      `sector`, and culture evidence (rating, review volume and recency, recurring themes,
+      sources).
+
+   c. **Score** from `evals/rubric.md`: `hard_gate` (`Pass` or `Reject`) with
+      `hard_gate_reason`; `adjustments` `{role_shape, qualification, company, salary}` at one
+      decimal; `adjustment_rationale` when any value is outside its default range;
+      `company_fit` (1.0–5.0) and `company_rationale`; `fit_summary`, one plain-English sentence
+      on why the role earned its score naming its main caveat; and `justification` naming
+      material gaps. When the candidate has a `related` note, weigh the earlier decision
+      it describes.
+
+   Build the evidence ledger before assigning gates or adjustments. Compare only stated
+      requirements with `cv.md`, `article-digest.md`, and `resume/skills-inventory.md`; separate
+   credible transferable experience from hard gaps; and never infer an unstated requirement from
+   the title. Mission alignment is a positive signal, not a requirement. Assess mission
+   relatability and practical human benefit; apply the configured `-0.2` to `-1.0`
+   low-relatability deduction to both `company` and `company_fit` only when a deeply technical,
+   compliance, security, or internal-administration product lacks a concrete human, customer, or
+   public benefit that a nontechnical person could understand. Explain it in
+   `company_rationale`. Insufficient culture evidence is `0.0`, not a penalty. Do not assign a
+   base value or a total: the route step
+   computes both. Write the array to `output/scans/scored-{YYYY-MM-DD}.json`.
+
+10. **Route** with one command. Run it with `--dry-run` first, since a real run appends to the
+    ledgers:
 
     ```bash
-    npm run validate-postings -- <url-1> <url-2> ...
+    npm run scan:route -- output/scans/scored-{YYYY-MM-DD}.json
     ```
 
-    A role may continue only when its JSON result is `"result": "active"`. Set `detail_url`
-    to the validator's `finalUrl`, and retain `official_careers_url`, `finalUrl`, and
-    `checkedAt` in the handoff. For `expired`, `uncertain`, timeout,
-    or error results, append a `closed` record to `data/seen-postings.jsonl` and do not
-    score, enrich, or card the role.
+    The script takes the title base from the posting title or `title_base_match`, rejects a role
+    with neither, applies the salary-floor and rejected-company hard gates,
+    calculates `total_score`, and surfaces 8.0+ roles, or 6.0–7.9 roles when nothing scored 8.0+.
+    It enforces the populate-trello handoff contract (active validation no more than 10 minutes
+    old, `finalUrl`, official careers URL, `fit_summary`) and routes companies: untracked
+    `company_fit` 4.0+ becomes a New Target, a tracked company gets an All Tracked update, and an
+    archived or rejected company gets no company card. It appends `closed`, `unverified`,
+    `rejected-guardrail`, and `rejected-lowscore` records, writes `output/scan-{YYYY-MM-DD}.csv`,
+    prints the ranked summary, and writes `output/scans/handoff-*.json` with prebuilt Trello card
+    text. Act on its report:
+    - **Needs revalidation:** rerun step 8 on those URLs, then route only those roles.
+    - **Warnings:** fix the scored file (for example, a missing `adjustment_rationale`) and rerun
+      only the affected roles.
 
-13. **For each validated offer**:
+11. **Hand off to the boards.** Pass the handoff `roles` to `modes/populate-trello.md` and use
+    each `card.name`, `card.description`, and `card.label` as written. Pass the handoff
+    `companies` to `modes/populate-company-trello.md`. Never promote a New Target to All
+    Tracked or add it to `portals.yml`. After the cards exist, record them:
 
-    a. **Enrich** (if the page was not already visited via Playwright in steps 7 or 12):
-       - `browser_navigate` + `browser_snapshot` to the job URL
-       - Extract:
-         - **salary**: visible salary range ("$120k–$160k") or blank if not listed
-         - **level**: seniority from title or JD (Senior / Lead / Manager / Mid / Associate / Junior)
-         - **location**: remote / hybrid / on-site + city if listed
-         - **job_description**: 1–2 sentence summary of what the person does day-to-day
-         - **company_description**: 1-sentence company mission or description from the About section
-         - **recruiter_contact**: name + email or LinkedIn if visible; blank if not
-         - **years_experience_required**: minimum years required (e.g. "2", "5+", "0-2") — infer from JD
-         - **tech_component**: degree of technical/data work required (high / medium / low)
-         - **relationship_component**: degree of client or external stakeholder relationship work (high / medium / low)
-         - **hard_requirements**: requirements the candidate genuinely does NOT meet (certs, licenses, domain expertise). Blank if none.
-         - **sector_classification**: company sector for mission-bonus and ethics assessment
-         - **culture_evidence**: employee-review rating if readily available, plus review volume, review recency, and recurring themes about leadership, workload, and psychological safety. Record the source(s) and whether the evidence is positive, negative, or insufficient.
-         - **glassdoor_rating**: company rating if readily available; blank if unavailable. It is supporting context, not a gate by itself.
-
-    b. **Score using `evals/rubric.md` v6 (the sole scoring specification):** assess hard gates before any scoring. For a passing role, use the approved title base, then apply one-decimal role-shape, qualification, company, and salary adjustments. Compare only stated requirements with `cv.md`, `article-digest.md`, and `resume/skills-inventory.md`; distinguish credible transferable experience from genuine hard gaps; and never infer an unstated requirement from the title. Produce a separate `company_fit` for company-target routing, the calculated `total_score` (emitted as `match_score`), and a concise justification naming material gaps.
-       role rationale, and a `fit_summary`: one plain-English sentence explaining why this
-       role earned its score and naming its main caveat. The `fit_summary` is required in
-       the Trello handoff for every surfaced role. Do not use the legacy blended `job_fit`/`mission_fit` model,
-       `scan-history.tsv`, or `modes/_profile.md` as scoring specifications.
-       Mission alignment is a positive signal, not a requirement: do not cap a viable role because a company is commercial or outside the target sectors. For an outside-sector company, include the culture-evidence conclusion in the company rationale. If culture evidence is insufficient, set the role disposition to `Needs review` rather than rejecting it solely for that reason; affirmative negative culture evidence lowers company fit and may prevent surfacing.
-
-    c. **Apply the v6 routing rules.** For an untracked company from Level 3 with `company_fit`
-       4–5, hand it to the Company Targets workflow as a **New Target** even if the role does
-       not pass, and even if the company's own careers page could not be confirmed (card it
-       `needs resolution` in that case — see `modes/populate-company-trello.md`). This is
-       independent of the role gate below: a validated role always still needs its own verified
-       official careers page before it can be carded to Job Applications. Include the validated
-       role as the Current-role signal and reuse the company-discovery card fields: company-fit
-       score and rationale, discovery summary, careers URL (or `needs resolution`), review date,
-       and provenance. For an already tracked company, update its existing All Tracked card instead.
-       Apply the role surfacing gate independently: an active role scoring 8.0–10.0, or 6.0–7.9 only on a
-       fallback day, is handed to Job Applications even though its company remains a New Target.
-       `pipeline.md` is the candidate queue, not the dedupe
-       authority and not a second board: do not append a duplicate line for a queued role.
-    d. Record the resolution in `data/seen-postings.jsonl`: `carded` after the board handoff; `closed` for expired postings; `rejected-guardrail` for hard-rule failures; and `rejected-lowscore` for scored-but-unsurfaced candidates. Append only; latest record wins. Also retain `scan-history.tsv` as a lightweight audit log.
-
-14. **Title-filtered offers**: record in `scan-history.tsv` with status `skipped_title`
-15. **Duplicate offers**: record with status `skipped_dup`
-16. **Expired offers (Level 3)**: record with status `skipped_expired`
-17. **Excluded offers (values)**: record with status `skipped_values`
-
-18. **Export CSV** — write `output/scan-{YYYY-MM-DD}.csv` (create `output/` if it doesn't exist):
-
-    Columns in this order:
-    ```
-    job_title,company,salary,level,location,job_description,company_description,recruiter_contact,job_link,job_fit,mission_fit,combined,glassdoor,justification
+    ```bash
+    npm run scan:record -- carded output/scans/handoff-{timestamp}.json [url ...]
     ```
 
-    - `combined`: the v6 **match_score (0.0–10.0, one decimal)** — the primary rank key.
-    - `job_fit` and `mission_fit`: legacy columns retained only for CSV compatibility; leave blank.
-    - `glassdoor`: company Glassdoor overall rating (blank if unavailable).
-    - `justification`: the one-line role rationale. Company fit is reported in the scan summary and Company Targets handoff.
-    - Sort rows by `combined` descending.
-    - Excluded / hard-rule offers (score 1–3) do NOT appear.
-
-    Formatting:
-    - First row: header
-    - Fields with commas/quotes/newlines: wrap in double quotes, escape `"` as `""`
-    - Blank if data not available — never "N/A" or "Unknown"
-    - UTF-8 encoding
-
-19. **Company Targets handoff** — untracked companies with `company_fit` 4–5:
-    - Pass an employer to `modes/populate-company-trello.md` as **New Targets** only when it is
-      not already in **🗄️ Archived** or **🚫 Rejected / Do Not Track**. For eligible employers,
-      do this whether or not a current role passes and whether or not their careers page could be
-      confirmed (card `needs resolution` rather than skipping). Never automatically promote them
-      to All Tracked or add them to `portals.yml`. For tracked companies, update the existing All
-      Tracked card only.
-    - A surfaced role at an **Archived** employer follows normal role routing but must not create,
-      recreate, or update a Company Targets card. Never surface a role or company card for an
-      employer in **🚫 Rejected / Do Not Track**.
-    - Include them in the output summary under "COMPANY TARGETS — high company fit".
-
-## Handling WebSearch prospecting results
-
-Use a search result only as a lead. Resolve it to the company's official careers page and exact
-public job-detail URL before validation. If the detail URL validates `active`, score and route the
-role normally; a surfaced role may create a Job Applications card and a separate New Targets card.
-If validation is `expired`, `uncertain`, times out, or errors, append a `closed` record to
-`data/seen-postings.jsonl`; do not score, enrich, create either card, or use the search snippet as
-evidence. Private URLs are `unverified` and are likewise not eligible for automated carding.
+    List URLs only when some cards were not created.
 
 ## Private URLs
 
-If a URL is not publicly accessible, record it as `unverified` and do not score or card it.
+A URL that is not publicly accessible fails validation in step 8 and is never scored or carded.
 The user may supply the JD directly for a separate, manual evaluation, but it is not eligible
 for automated role surfacing.
 
 ## Scan History
 
-`data/scan-history.tsv` is an optional audit log; it is not a dedupe or decision source.
-
-```
-url	first_seen	portal	title	company	status
-https://...	2026-02-10	Ashby — Implementation	Implementation Engineer	Acme	card-candidate
-https://...	2026-02-10	Greenhouse — Technical PM	Junior Engineer	BigCo	skipped_title
-https://...	2026-02-10	Careers page	Technical Consultant	ClosedCo	closed
-```
+`data/scan-history.tsv` is an audit log written by the scripts. It is not a dedupe or decision
+source.
 
 ## Output summary
 
-```
-Portal Scan — {YYYY-MM-DD}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Queries run:               N
-Offers found:              N total
-Filtered by title:         N removed
-Duplicates:                N skipped
-Excluded (values):         N skipped
-Expired:                   N skipped
-New offers added:          N
-
-Ranked Offers (v6 — 0.0–10.0 role match score)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- #   Company                Role                          Score  GD    Why
- 1   {company}              {title}                         9   4.2   {justification}
- 2   {company}              {title}                         8   4.0   {justification}
- ...
-Fallback day? {yes/no — only 6.0–7.9 surfaced because nothing scored 8.0+}
-
-COMPANY TARGETS — high company fit
-  {company}  Company fit {1.0–5.0}  {careers_url}  {company_rationale}
-  ...
-
-CSV: output/scan-{YYYY-MM-DD}.csv
-→ /career-ops pipeline to evaluate new offers.
-```
+Combine the printed summaries of `discover`, `scan:candidates`, and `scan:route`. Add the
+execution path (`Bash scripts`, `tool-backed fallback`, or `mixed`), the number of WebSearch
+queries run, any source that could not be reached, and the paths of the CSV and handoff file.
 
 ## Managing careers_url
 
@@ -384,18 +340,3 @@ Using the direct ATS URL when a corporate page exists can cause false 410 errors
 - Adjust title keywords as target roles evolve
 - Add companies to `tracked_companies` when you want to monitor them closely
 - Periodically verify `careers_url` — companies change ATS platforms
-
-
-## 18. Hand off to populate (card the surfaced roles)
-
-This mode produces the ranked, rubric-scored roles (the 8.0–10.0 set, or the 6.0–7.9 fallback) and the CSV. It does not create Trello cards directly. After surfacing:
-
-- Pass the surfaced roles, including `match_score` and required `fit_summary`, to
-  **`modes/populate-trello.md`** to create/update cards on the job-search board.
-- Pass untracked prospecting companies with `company_fit` 4–5 to
-  **`modes/populate-company-trello.md`** as New Targets; update existing All Tracked cards for
-  tracked companies.
-Only roles with an `active` validation result and that passed the surfacing gate are handed
-off. Excluded, closed, unverified, and low-score roles are recorded in the ledger and never
-carded. The populate mode owns all board-specific field mapping and dedup-against-board logic,
-so no carding logic lives outside the repo.

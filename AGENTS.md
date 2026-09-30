@@ -43,6 +43,10 @@ Exclude generic operations, GTM, RevOps, partnerships, business development, sal
 
 - `npm run discover -- --no-queue` — scan tracked ATS sources without adding raw results to the pipeline.
 - `npm run validate-postings -- URL...` — validate public job-detail URLs.
+- `npm run scan:candidates -- --leads FILE --scan-report FILE --pipeline` — filter, dedupe, and validate role-scan leads.
+- `npm run scan:route -- FILE [--dry-run]` — compute rubric totals, route roles and companies, write ledgers, CSV, and the Trello handoff.
+- `npm run scan:record -- carded|user-resolved FILE` — record Trello outcomes in the posting ledger.
+- `npm run scan:probe [-- --write]` — find `websearch`/`careers_page` sources with a working ATS API.
 - `npm run merge` — merge pending application tracker TSVs.
 - `npm run verify` — check application tracker integrity.
 - `npm run pdf` — render an HTML resume to PDF.
