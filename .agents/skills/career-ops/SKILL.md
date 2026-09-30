@@ -28,9 +28,9 @@ Determine the mode from `$mode`:
 | `tracker` | `tracker` |
 | `pipeline` | `pipeline` |
 | `apply` | `apply` |
+| `resume-prep` | `resume-prep` |
 | `scan` / `role-scan` | `role-scan` |
 | `populate-trello` | `populate-trello` |
-| `populate-notion` | `populate-notion` |
 | `company-discovery` | `company-discovery` |
 | `batch` | `batch` |
 | `patterns` | `patterns` |
@@ -86,7 +86,7 @@ Applies to: `auto-pipeline`, `oferta`, `ofertas`, `pdf`, `contacto`, `apply`, `p
 ### Standalone modes (only their mode file):
 Read `modes/{mode}.md`
 
-Applies to: `tracker`, `deep`, `interview-prep`, `training`, `project`, `patterns`, `followup`, `populate-trello`, `populate-notion`, `company-discovery`
+Applies to: `tracker`, `deep`, `interview-prep`, `training`, `project`, `patterns`, `followup`, `populate-trello`, `company-discovery`, `resume-prep`
 
 ### Modes delegated to subagent:
 For `role-scan`, `apply` (with Playwright), and `pipeline` (3+ URLs): launch as Agent with the content of `_shared.md` + `modes/{mode}.md` injected into the subagent prompt.

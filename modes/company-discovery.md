@@ -7,14 +7,14 @@ company; `role-scan.md` owns importing approved cards into `portals.yml`.
 
 ## Inputs
 - `portals.yml` → `discovery` (`stages_in_scope`, `funding_sources`, `discovery_queries`,
-  and the company ledger path),
+  the company ledger path, and `max_new_targets_per_run`),
   `priority_policy`, and `tracked_companies` (dedupe only). Do not hardcode a different list.
 - `config/profile.yml` → `narrative.target_sectors`, `narrative.excluded_sectors`, `narrative.excluded_companies`.
 - `evals/rubric.md` → the authoritative company-fit rubric (1–5).
 - `data/seen-companies.jsonl` → the company-level status ledger. Each record is
   `{name, domain, status}`; latest normalized company/domain record wins.
 - The **Company Targets** Trello board (see `modes/populate-company-trello.md`) → dedupe
-  against cards already in 🆕 New Targets, 📚 All Tracked, and 🚫 Rejected / Do Not Track.
+  against cards in 🆕 New Targets, 📚 All Tracked, 🗄️ Archived, and 🚫 Rejected / Do Not Track.
 
 ## 1. Find candidate companies (cast wide — all sizes/stages)
 Run every configured discovery lane plus targeted variations via WebSearch: funding/news,
@@ -32,14 +32,21 @@ RevOps/Strategy&Ops/Partnerships roles; mission language matching `profile.yml` 
 - **Exclusions:** NOT in `narrative.excluded_companies` and NOT in an `excluded_sectors` category (defense, military, mass surveillance, primarily DoD/IC revenue). When in doubt, exclude.
 - **Location plausibility:** hires in NYC or hires remote (US). Skip strictly single-location-elsewhere with no remote.
 - **Role plausibility:** plausibly hires 2–6yr client-facing technical, data strategy, product, consulting, or engineering roles. Do not prioritize generic Ops, GTM, partnerships, or BizOps.
-- **Novelty and rejection check:** prioritize companies absent from the ledger and all Company
-  Targets lists. Skip `rejected` companies without researching or recarding them, unless Joshua
-  explicitly moves them out of 🚫 Rejected / Do Not Track.
+- **Novelty and ledger check:** prioritize companies absent from the ledger and all Company
+  Targets lists. Skip both `archived` and `rejected` companies without researching or recarding
+  them, unless Joshua explicitly restores the card to an active list.
 
 Score every remaining candidate's `company_fit` using `evals/rubric.md`. Create or update a New
 Targets card only for `company_fit` 4–5. Do not card hard exclusions or companies scoring 1–3.
-Append each resolution to `data/seen-companies.jsonl` using only `{name, domain, status}`:
-`new_target`, `tracked`, or `rejected`.
+For new cards, enforce `discovery.max_new_targets_per_run` (default: 5). Rank eligible new
+companies by company fit, then high-priority-sector fit, then strength and recency of the hiring,
+funding, or mission signal. Create cards only for the top-ranked companies within that limit;
+defer the rest to a future run. Existing New Targets cards may still be updated and do not count
+against the limit. Do not write a deferred company as `new_target` in the ledger, so it remains
+eligible for reconsideration.
+
+Append each carded or otherwise resolved company to `data/seen-companies.jsonl` using only
+`{name, domain, status}`: `new_target`, `tracked`, `archived`, or `rejected`.
 
 ## 3. Resolve each kept company's careers source (best effort — does not gate the card)
 Find the live careers page / ATS board and record the provider so the sweep can fetch it:
@@ -57,8 +64,8 @@ reaches `portals.yml`.
 
 ## 4. Create or update New Targets
 
-Pass every company scoring 4–5 to `modes/populate-company-trello.md` as a **New Target**,
-whether or not its careers page verified in step 3. Include the company-fit score, rationale,
+Pass only the limit-selected companies scoring 4–5 to `modes/populate-company-trello.md` as a
+**New Target**, whether or not its careers page verified in step 3. Include the company-fit score, rationale,
 discovery summary, careers URL (or blank), the `verified` / `needs resolution` status, careers-page
 check date, and source URL. This is the same card-creation path used by role-scan prospecting;
 dedupe by normalized company name and preserve user notes.

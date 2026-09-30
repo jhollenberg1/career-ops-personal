@@ -3,19 +3,19 @@
 ## Default job-search path
 
 ```text
-Company discovery → company novelty/rejection ledger → Company Targets: New Targets (company fit 4–5)
+Company discovery → company novelty ledger (including Archived and Rejected) → Company Targets: New Targets (company fit 4–5)
   → Joshua manually moves a target to All Tracked → role scan verifies careers page → portals.yml
   → discover.mjs (daily watchlist / weekly --all)
   → exact job-detail validation → modes/role-scan.md (rubric)
   → modes/populate-trello.md
   → data/seen-postings.jsonl (posting resolution ledger)
 
-WebSearch prospecting in role scan may also find an untracked live role. After exact official-page
-validation it can surface the role to Job Applications and create a separate New Targets company
-card; only Joshua's later move to All Tracked adds that company to the watchlist.
+WebSearch prospecting in role scan may also find an untracked live role. It cross-checks only
+Rejected / Do Not Track: an Archived company may still surface a high-fit role, but is not
+re-created as a company target. After exact official-page validation, another untracked employer
+can surface the role to Job Applications and create a separate New Targets company card; only
+Joshua's later move to All Tracked adds that company to the watchlist.
 
-`modes/populate-notion.md` is an optional dual-write integration, not part of the default scan
-handoff.
 ```
 
 ### State ownership
@@ -24,7 +24,7 @@ handoff.
 |---|---|
 | `data/pipeline.md` | User-supplied or explicitly deferred candidate queue; never a dedupe authority. |
 | `data/seen-postings.jsonl` | Authoritative posting-level resolution and recheck state. |
-| `data/seen-companies.jsonl` | Company-level `new_target`, `tracked`, and `rejected` status ledger. |
+| `data/seen-companies.jsonl` | Company-level `new_target`, `tracked`, `archived`, and `rejected` status ledger. |
 | `data/scan-history.tsv` | Optional discovery audit log only. |
 | `data/applications.md` | Application-stage tracker after a candidate becomes an application. |
 

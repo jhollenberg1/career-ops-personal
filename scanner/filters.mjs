@@ -6,11 +6,16 @@ export function buildTitleFilter(titleFilter = {}) {
     ...(titleFilter.core || []),
     ...(titleFilter.explore || []),
   ].map(value => value.toLowerCase());
-  const negative = (titleFilter.negative || []).map(value => value.toLowerCase());
+  // Negative terms match whole words: "Intern" must not reject "Internal Tools", and
+  // "Staff " (legacy trailing space) must still reject "Solutions Engineer (Staff)".
+  const negative = (titleFilter.negative || [])
+    .map(value => value.trim().toLowerCase())
+    .filter(Boolean)
+    .map(term => new RegExp(`(^|[^a-z0-9])${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}($|[^a-z0-9])`));
   return title => {
     const value = title.toLowerCase();
     return (positive.length === 0 || positive.some(term => value.includes(term))) &&
-      !negative.some(term => value.includes(term));
+      !negative.some(term => term.test(value));
   };
 }
 

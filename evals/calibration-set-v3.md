@@ -1,7 +1,7 @@
 # Historical Calibration Source — Rubric v3.1
 
 The twelve human-scored cases below were imported as `C1–C12` in
-`golden-set.csv`. This file is retained as readable source material; it is not
+the former v3 calibration dataset. This file is retained as readable source material; it is not
 the active v4 specification or a separate dataset to score.
 
 Twelve synthetic postings built to probe v3 decisions: Software Engineer roles,

@@ -15,7 +15,8 @@ Put Joshua-specific targets, narrative, location policy, compensation preference
 
 - Daily: scan tracked companies for newly posted roles, validate the JD, score the role, and create a Trello card only when it clears the threshold.
 - Every three days, alternating: broad untracked role discovery; broad company discovery.
-- `data/seen-companies.jsonl` prevents rediscovery. Rejected companies are skipped.
+- `data/seen-companies.jsonl` prevents company rediscovery. Archived and rejected companies are
+  skipped by company discovery; only rejected companies are skipped by untracked role discovery.
 - `data/tracker-additions/` holds pending application-tracker TSVs. Run `node merge-tracker.mjs` after an evaluation creates one.
 
 ## Targeting
@@ -27,14 +28,25 @@ Exclude generic operations, GTM, RevOps, partnerships, business development, sal
 ## Safety and quality
 
 - Never submit an application without Joshua's explicit review and approval.
+- **Google Docs trusted reads:** Never write trusted-read artifacts to this repository. Use a unique
+  directory under `/private/tmp` and remove it when the document task is complete.
+- **Resume-prep gate:** Before any workflow moves a Job Applications card from `To Apply` to `Ready to Send`, it must complete `modes/resume-prep.md`. A bullet-order recommendation alone is insufficient: the card must link the default or explicitly selected base resume, dedicated variant, before/after ATS screens, unresolved requirements, and the required review state. Otherwise leave the card in `To Apply`.
 - Verify live postings with Playwright before recommending or carding them. A visible title, description, and apply action indicate an active role; navigation/footer text alone does not.
 - Use cheap title, level, location, and eligibility filtering first. Then use the JD to assess fit and experience gaps. Surface only roles that clear the configured threshold.
 - Do not add duplicate application entries. Use canonical states from `templates/states.yml`.
+- **Role evaluation:** Use the v6 files in `evals/`: assess hard gates first, then record the
+  title base plus one-decimal role-shape, qualification, company, and salary adjustments with a
+  calculated total and justification. Score from `candidates.csv` without reading
+  `human-reviews.csv`; evaluate only after Joshua independently fills the same fields.
 
 ## Useful commands
 
 - `npm run discover -- --no-queue` — scan tracked ATS sources without adding raw results to the pipeline.
 - `npm run validate-postings -- URL...` — validate public job-detail URLs.
+- `npm run scan:candidates -- --leads FILE --scan-report FILE --pipeline` — filter, dedupe, and validate role-scan leads.
+- `npm run scan:route -- FILE [--dry-run]` — compute rubric totals, route roles and companies, write ledgers, CSV, and the Trello handoff.
+- `npm run scan:record -- carded|user-resolved FILE` — record Trello outcomes in the posting ledger.
+- `npm run scan:probe [-- --write]` — find `websearch`/`careers_page` sources with a working ATS API.
 - `npm run merge` — merge pending application tracker TSVs.
 - `npm run verify` — check application tracker integrity.
 - `npm run pdf` — render an HTML resume to PDF.

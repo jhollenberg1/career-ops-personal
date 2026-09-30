@@ -35,6 +35,12 @@ const ledger = new Map([[posting.url, { status: 'closed', last_checked: '2026-08
 assert.equal(isSuppressed(posting, ledger, { recheck_days_closed: 30 }, Date.parse('2026-08-20')), true);
 assert.equal(isSuppressed(posting, ledger, { recheck_days_closed: 30 }, Date.parse('2026-10-20')), false);
 
+ledger.set(posting.url, { status: 'rejected-user', last_checked: '2026-01-01' });
+assert.equal(isSuppressed(posting, ledger, {}, Date.parse('2030-01-01')), true);
+
+ledger.set(posting.url, { status: 'not-applying-user', last_checked: '2026-01-01' });
+assert.equal(isSuppressed(posting, ledger, {}, Date.parse('2030-01-01')), true);
+
 assert.deepEqual(getAtsSource({ careers_url: 'https://jobs.ashbyhq.com/acme' }), {
   type: 'ashby', url: 'https://api.ashbyhq.com/posting-api/job-board/acme?includeCompensation=true',
 });

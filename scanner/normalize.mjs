@@ -1,4 +1,5 @@
-const TRACKING_PARAM = /^(utm_|gh_|source$|ref$|referrer$|lever-source$)/i;
+// `gh_jid` is the job ID on company-hosted Greenhouse pages; only `gh_src` is tracking.
+const TRACKING_PARAM = /^(utm_|gh_src$|source$|ref$|referrer$|lever-source$)/i;
 
 export function normalizeText(value = '') {
   return String(value).normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
